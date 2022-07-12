@@ -29,8 +29,8 @@ library(exactextractr)
 ### Abyssal & Bathyal provinces from Watling et al., 2013
 ### Related publication: https://www.sciencedirect.com/science/article/abs/pii/S0079661112001693?via%3Dihub
 ### Access to shapefiles given by the author
-abyssal <- st_read(dsn = "data/deep_sea/GOODSprovinces_all", layer = "GOODSprovinces_abyssal")
-bathyal <- st_read(dsn = "data/deep_sea/GOODSprovinces_all", layer = "GOODSprovinces_bathyal")
+abyssal <- st_read(dsn = "data/goods_provinces", layer = "GOODSprovinces_abyssal")
+bathyal <- st_read(dsn = "data/goods_provinces", layer = "GOODSprovinces_bathyal")
 
 
 ### A. Work on abyssal self intersections
