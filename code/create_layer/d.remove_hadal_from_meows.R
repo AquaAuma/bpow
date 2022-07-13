@@ -110,13 +110,15 @@ hadal <- data.frame(had_n) %>%
          rlm = NA_character_,
          rlm_id = NA,
          had_id = c(1:nrow(had_n))) %>%
-  rename(had_n = `c..Aleutian.Japan....Philippine....Mariana....Bougainville.New.Hebrides...`)
+  rename(had_n = `c..Aleutian.Japan....Philippine....Mariana....Bougainville.New.Hebrides...`) %>% 
+  st_as_sf()
+hadal_poly <- data.frame()
 
 # load("creating_layer/remove_hadal_from_coastal.RData")
 # ggplot(eco[hadal_ecoregions,]) + geom_sf(color = NA) + theme_bw() +
 #   geom_sf(data = eco[hadal_ecoregions[1],], fill = "red", color= NA)
 
-for(h in 1:length(hadal_ecoregions)){
+for(h in 4:length(hadal_ecoregions)){
   
   print(h)
   hadal_one <- eco[which(eco$eco_id == hadal_ecoregions[h]),]
@@ -153,7 +155,7 @@ for(h in 1:length(hadal_ecoregions)){
   depth_poly <- exact_extract(depth, hadal_one, include_xy = T)
   
   new_r <- aggregate(depth, fact = 4, fun = min)
-  new_r[new_r>(-2000)] <- NA
+  new_r[new_r>(-5000)] <- NA
   
   overlap_ri <- coverage_fraction(new_r, hadal_one)[[1]]
   overlap_ri[overlap_ri==0] <- NA
@@ -165,74 +167,56 @@ for(h in 1:length(hadal_ecoregions)){
     group_by(ID) %>%
     summarize(geometry = st_union(geometry))
   
-  ggplot(hadal_one) + geom_sf() + theme_bw() +
-    geom_sf(data = new_poly, fill = "red", alpha = 0.5)
-  ggplot(new_poly) + geom_sf()
+  # ggplot(hadal_one) + geom_sf() + theme_bw() +
+  #   geom_sf(data = new_poly, fill = "red", alpha = 0.5)
+  # ggplot(new_poly) + geom_sf()
   
+  if(st_is_valid(new_poly)==FALSE){
+    new_poly <- st_make_valid(new_poly)
+  }
   corr_poly <- st_difference(hadal_one, new_poly)
-  
-  ggplot(world) + geom_sf(data = new_poly, fill = "orange")
   
   # modify coastal ecoregion
   st_geometry(eco_no_hadal[which(eco_no_hadal$eco_id == hadal_ecoregions[h]),]) <- st_geometry(corr_poly)
   
-  # add geometry of hadal region
-  if(hadal_ecoregions[h]==74){
-    new_poly <- new_poly %>%
-      st_cast(to = "POLYGON")
-    poly_1 <- new_poly %>%
-      group_by(row.names(new_poly)) %>%
-      mutate(lon = st_bbox(geometry)[3]) %>%
-      filter(lon<163.1) %>%
-      group_by(ID) %>%
-      summarize(geometry = st_union(geometry)) %>%
-      dplyr::select(-ID)
-    poly_1 <- data.frame(c(hadal[5,],poly_1))
-    
-    poly_2 <- new_poly %>%
-      st_cast(to = "POLYGON") %>%
-      group_by(row.names(new_poly)) %>%
-      mutate(lon = st_bbox(geometry)[3]) %>%
-      filter(lon>163.1) %>%
-      group_by(ID) %>%
-      summarize(geometry = st_union(geometry)) %>%
-      dplyr::select(-ID)
-    poly_2 <- data.frame(c(hadal[6,],poly_2))
-    
-    hadal_poly <- rbind(poly_1, poly_2)
-    rm(poly_1, poly_2)
-  } else if (hadal_ecoregions[h] %in% c(46,47,48,51,53,54)){
-    new_poly <- new_poly %>%
-      dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[1,], new_poly)))
+  if (hadal_ecoregions[h] %in% c(46,47,48,51,53,54)){
+    new_poly <- st_as_sf(cbind(hadal[1,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(122,123,124.125)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[2,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[2,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(121,127,126,128,129)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[3,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[3,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(130,134,135,136,148)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[4,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[4,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(147,153,154)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[5,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[5,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(176,177,178)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[6,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[6,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(111,119,120,132)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[7,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[7,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   } else if (hadal_ecoregions[h] %in% c(63,64,65)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[8,], new_poly)))
+    new_poly <- st_as_sf(cbind(hadal[8,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)
   # } else if (hadal_ecoregions[h] == 195){
   #   new_poly <- new_poly %>%
   #     dplyr::select(-ID)
@@ -240,37 +224,9 @@ for(h in 1:length(hadal_ecoregions)){
   } else if (hadal_ecoregions[h] %in% c(219,220)){
     new_poly <- new_poly %>%
       dplyr::select(-ID)
-    hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[10,], new_poly)))}
-  # } else if (hadal_ecoregions[h] %in% c(91,92)){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[11,], new_poly)))
-  # } else if (hadal_ecoregions[h] %in% c(204,205)){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[12,], new_poly)))
-  # } else if (hadal_ecoregions[h] ==247){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[13,], new_poly)))
-  # } else if (hadal_ecoregions[h] %in% c(163,164)){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[14,], new_poly)))
-  # } else if (hadal_ecoregions[h] == 159){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[15,], new_poly)))
-  # } else if (hadal_ecoregions[h] == 176){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[16,], new_poly)))
-  # } else if (hadal_ecoregions[h] %in% c(79,150)){
-  #   new_poly <- new_poly %>%
-  #     dplyr::select(-ID)
-  #   hadal_poly <- rbind(hadal_poly, data.frame(c(hadal[17,], new_poly)))
-  # } 
-  
+    new_poly <- st_as_sf(cbind(hadal[10,],new_poly))
+    hadal_poly <- rbind(hadal_poly, new_poly)}
+
   save.image("outputs/hadal/remove_hadal_from_coastal.RData")
   
   rm(corr_poly, new_poly, overlap_ri, depth_poly, depth, new_ri, new_r,
@@ -294,7 +250,7 @@ hadal_poly <- st_make_valid(st_as_sf(hadal_poly)) %>%
 eco_hadal <- rbind(eco_hadal, hadal_poly)
 
 st_write(obj = eco_hadal, 
-         dsn = "outputs/hadal/provinces_p7s.shp")
+         dsn = "outputs/hadal/provinces_p7s3.shp")
 
 
 
