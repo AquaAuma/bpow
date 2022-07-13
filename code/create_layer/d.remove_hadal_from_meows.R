@@ -1,9 +1,3 @@
-################################################################################
-#### Remove hadal regions
-#### Coding and data processing: Aurore Maureaud
-#### July 2022
-################################################################################
-
 # load libraries
 library(sf)
 library(tidyverse)
