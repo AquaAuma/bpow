@@ -16,9 +16,10 @@ eco <- st_read("outputs/arcpro/post-processing_1/Provinces_P5S2.shp") %>%
          prov_id = ifelse(type %in% c("abyssal", "bathyal"), PROVINCE, prov_id),
          prov_n = ifelse(type %in% c("abyssal","bathyal"), Name, prov_n),
          eco_n = ECOREGION,
-         eco_id = ECO_CODE,
+         eco_id = ECO_CODE_X,
+         eco_id = ifelse(eco_id ==0, NA, eco_id),
          rlm_id = RLM_CODE,
          rlm_n = REALM) %>% 
-  select(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id)
+  dplyr::select(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id)
 
 st_write(eco, dsn = "outputs/bpow/bpow_p5s4.shp")
