@@ -33,7 +33,7 @@ library(exactextractr)
 
 
 # load biogeography layer
-eco <- st_read("~/Yale University/Marine Biogeography/outputs/quality_checks/seafloor_meow_deepsea_24Aug.shp") %>% 
+eco <- st_read("outputs/arcpro/post-processing_1/Provinces_P5S2.shp") %>% 
   mutate(prov_n = case_when(ID=="1" ~ "Arctic Basin",
                             ID=="2" ~ "North Atlantic",
                             ID=="3" ~ "Brazil Basin",
@@ -79,14 +79,14 @@ eco <- st_transform(eco, crs = st_crs(holes))
 rm(holes)
 
 # Load all depth shapefiles
-depth_n0_s90_w180_e90 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-180.0_e-90.0.asc")
-depth_n0_s90_w90_e0 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-90.0_e0.0.asc")
-depth_n0_s90_w0_e90 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w0.0_e90.0.asc")
-depth_n0_s90_w90_e180 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w90.0_e180.0.asc")
-depth_n90_s0_w180_e90 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-180.0_e-90.0.asc")
-depth_n90_s0_w90_e0 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-90.0_e0.0.asc")
-depth_n90_s0_w0_e90 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w0.0_e90.0.asc")
-depth_n90_s0_w90_e180 <- raster("~/Yale University/Marine biogeography/regions_base/depth/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w90.0_e180.0.asc")
+depth_n0_s90_w180_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-180.0_e-90.0.asc")
+depth_n0_s90_w90_e0 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-90.0_e0.0.asc")
+depth_n0_s90_w0_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w0.0_e90.0.asc")
+depth_n0_s90_w90_e180 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w90.0_e180.0.asc")
+depth_n90_s0_w180_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-180.0_e-90.0.asc")
+depth_n90_s0_w90_e0 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-90.0_e0.0.asc")
+depth_n90_s0_w0_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w0.0_e90.0.asc")
+depth_n90_s0_w90_e180 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w90.0_e180.0.asc")
 
 obj = c('depth_n90_s0_w180_e90', 'depth_n90_s0_w90_e0',
         'depth_n90_s0_w0_e90', 'depth_n90_s0_w90_e180',
