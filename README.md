@@ -4,8 +4,9 @@
 Folder with the R codes used for the analyses separated into two parts:
 1. create_layer, describing all steps to create the GIS layer performed on R
 - a.fix_deep_sea_layers.R fix deep sea layers before first Arc processing
-- b.remove_hadal_from_meows.R remove hadal zones after the first Arc processing
-- c.add_missing_regions.R 3D nearest neighbor analysis on all missing zones after the first Arc processing
+- b.layer_post-processing_1.R
+- c.remove_hadal_from_meows.R remove hadal zones after the first Arc processing
+- d.add_missing_regions.R 3D nearest neighbor analysis on all missing zones after the first Arc processing
 2. technical validation
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
