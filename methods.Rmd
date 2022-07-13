@@ -25,7 +25,11 @@ library(here)
 
 -   Step \#1: Both the bathyal and abyssal layers were checked because we noticed some wrong geometries in it when trying to perform geometric operations on Arc/QGIS. A lot of points were identified with wrong geometries because of self-intersections.
 
+    [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/self_intersection_2.png) ![](figures/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
+
 -   Step \#2: The validity of geometries was checked with the command "Check validity" of QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
+
+    ![](figures/self_intersection_4.png)
 
 ## Part 2: correcting geometries for the DSP shapefile layers
 
@@ -40,11 +44,15 @@ library(here)
 
 ## Part 3: Removing irregularities from the bathyal shapefile
 
--   Step \#1: identification of areas: fff the Florida coast, because the threshold of 800m is arbitrary and this is a "transition" zone
+-   Step \#1: identification of areas: off the Florida coast, because the threshold of 800m is arbitrary and this is a "transition" zone
+
+    ![](figures/irregularities.png)
 
 -   Step \#2: fixed on R, using GEBCO and adding additional areas to the bathyal layer
 
 -   Step \#3: all polygons intersecting the depth raster (in blue below) are merged via `st_union()` to create one larger replacing polygons, added to the bathyal layer
+
+    ![](figures/irregularities_3.png){width="293"}
 
 -   Step \#4: geometry checked again and file saved with the function with the sf R function`st_write()`
 
@@ -54,6 +62,8 @@ library(here)
 ## Part 4: Merging the bathyal and abyssal shapefile layers
 
 -   Step \#1: Check that the layers are perfectly complementary to each other by manual visualization, and they are not
+
+    ![](figures/complementarity_1.png) ![](figures/complementarity_2.png) ![](figures/complementarity_3.png)
 
 -   Step \#2: Creating perfectly complementary abyssal and bathyal layers, by taking the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats will be associated with the bathyal layer, because they may represent more potential habitat than abyssal areas.
 
@@ -67,19 +77,23 @@ library(here)
 
     Operation: merging layers of the two shapefiles to form one deep sea shapefile
 
-    `QGIS: Vector → Data Management Tools → Merge layers → Input Layers: ABYSSAL + BATHYAL`
-    `ArcGIS: Merge, input = p4s2, input = GOODSprovinces_bathyal_irregularities, output = GOODSprovinces_p4s3`
+    `QGIS: Vector → Data Management Tools → Merge layers → Input Layers: ABYSSAL + BATHYAL` `ArcGIS: Merge, input = p4s2, input = GOODSprovinces_bathyal_irregularities, output = GOODSprovinces_p4s3`
 
 -   Step \#4: Correcting invalid geometry manually
 
-## Part 5:  Merging the coastal and deep sea shapefile layers
+    ![](figures/self_intersection_5.png)
+
+## Part 5: Merging the coastal and deep sea shapefile layers
 
 -   Step \#1: Here, two options are possible: (i) removing marine ecoregion areas and keeping them associated with the deep-sea layers (ii) removing areas from the deep sea areas and keeping them associated with the ecoregions.
 
+    ![](figures/merge_1.png)
+
     Operation (i): geometric difference between the MEOW layer and the DEEPSEA layer
 
-    `QGIS: Vector → Geoprocessing Tools → Difference → Input Layer: MEOW, Overlay Layer: DEEPSEA`
-    `ArcGIS: Geoprocessing → Pairwise Erase, input = meows_ecos, erase = GOODSprovinces_p4s3, output = provinces_p5s1`
+    ![](figures/merge_2.png){width="626"}
+
+    `QGIS: Vector → Geoprocessing Tools → Difference → Input Layer: MEOW, Overlay Layer: DEEPSEA` `ArcGIS: Geoprocessing → Pairwise Erase, input = meows_ecos, erase = GOODSprovinces_p4s3, output = provinces_p5s1`
 
 -   Step \#2: Creating a shapefile for joining the layers MEOW and DEEPSEA that after step\#1 should be perfectly complementary (no spatial overlap) that I will then call the SEAFLOOR shapefile layer.
 
@@ -97,6 +111,8 @@ library(here)
 ## Part 6: Identify remaining areas
 
 -   Step \#1: two types of areas will not yet be characterized in the SEAFLOOR layer, (i) hadal regions below 6,500m, where we should not really observe species, (ii) regions between 200 and 800m that don't belong to ecoregions. The bathyal layer starts at 800m and onwards, so there are remaining zones to associate with a region.
+
+    ![](figures/missing_regions_1.png) ![](figures/missing_regions_2.png)
 
 -   Step \#2: get a shapefile with all missing polygons: (merge of seafloor shapefile with a low resolution land layer (does not matter since meows have a bunch of land areas already)
 
@@ -127,5 +143,3 @@ library(here)
 ```
 
 # References
-
- 
