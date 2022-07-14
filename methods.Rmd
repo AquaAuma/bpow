@@ -30,6 +30,8 @@ library(here)
 
 ## Part 1: check validity of DSP geometries
 
+*Performed on ArcGIS Pro*
+
 -   Step \#1: Both the bathyal and abyssal layers were checked because we noticed some wrong geometries in it when trying to perform geometric operations on Arc/QGIS. A lot of points were identified with wrong geometries because of self-intersections.
 
     [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/self_intersection_2.png) ![](figures/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
@@ -40,16 +42,20 @@ library(here)
 
 ## Part 2: correcting geometries for the DSP shapefile layers
 
+*Performed on R*
+
 -   Step \#1: check validity of geometries on R with the sf function `st_is_valid()`to check what geometric problem is occurring. All issues are due to self-intersections on both objects
 
 -   Step \#2: correct the geometric issues in both layers with the sf R function `st_make_valid()`
 
 -   Step \#3: files saved with the function with the sf R function `st_write()`
 
-```{r code a., code = readLines(here("./code/create_layer/a.fix_deep_sea_layers.R")), eval = FALSE}
+```{r code a., code = readLines(here("./code/create_layer/a.fix_deep_sea_layers.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 3: Removing irregularities from the bathyal shapefile
+
+*Performed on R*
 
 -   Step \#1: identification of areas: off the Florida coast, because the threshold of 800m is arbitrary and this is a "transition" zone
 
@@ -63,10 +69,12 @@ library(here)
 
 -   Step \#4: geometry checked again and file saved with the function with the sf R function`st_write()`
 
-```{r code b., code = readLines(here("./code/create_layer/b.remove_irregularities.R")), eval = FALSE}
+```{r code b., code = readLines(here("./code/create_layer/b.remove_irregularities.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 4: Merging the bathyal and abyssal shapefile layers
+
+*Performed on ArcGIS Pro*
 
 -   Step \#1: Check that the layers are perfectly complementary to each other by manual visualization, and they are not
 
@@ -92,6 +100,8 @@ library(here)
 
 ## Part 5: Merging the coastal and deep sea shapefile layers
 
+*Performed on ArcGIS Pro*
+
 -   Step \#1: Here, two options are possible: (i) removing marine ecoregion areas and keeping them associated with the deep-sea layers (ii) removing areas from the deep sea areas and keeping them associated with the ecoregions.
 
     ![](figures/merge_1.png){width="543"}
@@ -112,10 +122,12 @@ library(here)
 
 -   Step \#4: fix the format of provinces_p5s2 in R
 
-```{r code c., code = readLines(here("./code/create_layer/c.layer_post-processing_1.R")), eval = FALSE}
+```{r code c., code = readLines(here("./code/create_layer/c.layer_post-processing_1.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 6: Identify remaining areas
+
+*Performed on ArcGIS Pro*
 
 -   Step \#1: two types of areas will not yet be characterized in the SEAFLOOR layer, (i) hadal regions below 6,500m, where we should not really observe species, (ii) regions between 200 and 800m that don't belong to ecoregions. The bathyal layer starts at 800m and onwards, so there are remaining zones to associate with a region.
 
@@ -139,27 +151,47 @@ library(here)
 
 ## Part 7: Remove hadal and classify provinces
 
+*Performed on R*
+
 -   Step \#1: Identification of hadal trenches of the world are done based on rough identification of relevant coastal ecoregions based on [@belyaev_deep_1989] and [@jamieson2010].
 
--   Step \#2: For each identified ecoregion from Step \#1, we use the corresponding depth raster from GEBCO to identify trenches (below 6,500m deep) and create new polygons from there. For instance, on the figure below, the ecoregions from provinces_p5s2 include deep area on the northern sites.
+-   Step \#2: For each identified ecoregion from Step \#1, we use the corresponding depth raster from GEBCO to identify trenches (below 6,500m deep) and create new polygons from there. For instance, on the figure below, the ecoregion "Eastern Caribbean" from provinces_p5s2 include deep area on the northern sites.
 
     ![](figures/select_hadal_1.png){width="263"} ![](figures/select_hadal_2.png){width="198"}
 
 -   Step \#3: All polygons are merged back to the provinces shapefile, where coastal ecoregions do not include hadal trenches anymore, and they are added as separate geometries.
 
-```{r code d., code = readLines(here("./code/create_layer/d.remove_hadal_from_meows.R")), eval = FALSE}
+```{r code d., code = readLines(here("./code/create_layer/d.remove_hadal_from_meows.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 8: Characterize missing regions
 
--   Step \#1:
+*Performed on R*
+
+-   Step \#1: associate the depth raster corresponding to a box around the polygon
+
+-   Step \#2: find the polygons of the seafloor in that box
+
+-   Step \#3: if there is only one polygon, associate the missing polygon the that polygon
+
+-   Step \#4: if there are multiple polygons, calculate the closest distance based on 3D (longitude, latitude, depth (a)) with the function [mcNNindex](https://www.rdocumentation.org/packages/Morpho/versions/2.8/topics/mcNNindex) and associate the closest polygon based on shortest distance around each point of the raster of the missing polygon (b). Because some areas are transition areas, the boundaries between the polygons are not clean (see figure (c)), so the resulting raster is aggregated at a lower resolution, as well as the grid cell polygon associations (d). Finally, polygons are created and associated with the ID of the closest polygon from the seafloor shapefile.
 
     ![](figures/3D-NNA_1.png){width="179"} ![](figures/3D-NNA_2.png){width="198"} ![](figures/3D-NNA_3.png){width="213"}
 
--   Step \#2:
-
-```{r  code e., code = readLines(here("./code/create_layer/e.add_missing_regions.R")), eval = FALSE}
+```{r  code e., code = readLines(here("./code/create_layer/e.add_missing_regions.R")), class.source="small", eval = FALSE}
 
 ```
+
+## Part 9: Quality checks
+
+*Performed on ArcGIS Pro*
+
+-   Step \#1: Fix regions with weird lines on boundary regions
+
+-   Step \#2:
+
+## Part 10: Remove land
+
+*Performed on ArcGIS Pro*
 
 # References
