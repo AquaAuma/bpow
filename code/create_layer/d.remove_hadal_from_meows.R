@@ -238,13 +238,13 @@ hadal_poly <- st_make_valid(st_as_sf(hadal_poly)) %>%
   dplyr::select(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id, had_n, had_id, geometry)
 
 eco_hadal <- rbind(eco_hadal, hadal_poly)
-# eco_hadal[60225,] <- st_cast(eco_hadal[60225,], "POLYGON")
-# 
-# eco_p7s3 <- eco_hadal %>% 
-#   group_by(type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id, had_n, had_id) %>% 
-#   summarize(geometry = st_union(geometry))
-# 
-# st_write(obj = eco_p7s3, 
-#          dsn = "outputs/bpow/provinces_p7s3.shp", delete_dsn = T)
+# transform geometry collection into multipolygon
+st_geometry(eco_hadal[60226,]) <- st_geometry(st_collection_extract(eco_hadal[60226,], type = "POLYGON"))
+st_geometry(eco_hadal[100307,]) <- st_geometry(st_collection_extract(eco_hadal[100307,], type = "POLYGON"))
+st_geometry(eco_hadal[140385,]) <- st_geometry(st_collection_extract(eco_hadal[140385,], type = "POLYGON"))
+st_geometry(eco_hadal[180461,]) <- st_geometry(st_collection_extract(eco_hadal[180461,], type = "POLYGON"))
 
-save(eco_hadal, file="outputs/hadal/provinces_p7s3_layers.RData")
+# save file
+st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3.shp")
+
+
