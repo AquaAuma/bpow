@@ -104,7 +104,7 @@ hadal <- data.frame(had_n) %>%
   rename(had_n = `c..Aleutian.Japan....Philippine....Mariana....Bougainville.New.Hebrides...`)
 hadal_poly <- data.frame()
 
-for(h in 39:length(hadal_ecoregions)){
+for(h in 1:length(hadal_ecoregions)){
   
   print(h)
   hadal_one <- eco[which(eco$eco_id == hadal_ecoregions[h]),]
