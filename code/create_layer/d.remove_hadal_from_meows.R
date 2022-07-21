@@ -244,6 +244,11 @@ st_geometry(eco_hadal[100307,]) <- st_geometry(st_collection_extract(eco_hadal[1
 st_geometry(eco_hadal[140385,]) <- st_geometry(st_collection_extract(eco_hadal[140385,], type = "POLYGON"))
 st_geometry(eco_hadal[180461,]) <- st_geometry(st_collection_extract(eco_hadal[180461,], type = "POLYGON"))
 
+eco_hadal <- eco_hadal %>%
+  dplyr::select(-ID) %>% 
+  distinct()
+eco_hadal$ID <- 1:nrow(eco_hadal)
+
 # save file
 st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3.shp")
 
