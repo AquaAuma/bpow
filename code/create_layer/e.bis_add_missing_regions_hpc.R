@@ -21,34 +21,29 @@ library(units)
 ### Load data & fix shapefile attributes
 ################################################################################
 # load provinces_p7s3
-seafloor_meow_deepsea <- st_read("outputs/hadal/provinces_p7s3.shp")
+general_path <- "/gpfs/ysm/home/aam238/bpow/"
+seafloor_meow_deepsea <- st_read(paste0(general_path, "provinces_p7s3.shp"))
 
 # load holes shapefile
-holes <- st_read("outputs/arcpro/post-processing_1/holes_p6s2_correct.shp") %>% 
+holes <- st_read(paste0(general_path, "holes_p6s2_correct.shp")) %>% 
   st_cast("POLYGON") %>% 
   mutate(Shape_Area = drop_units(st_area(geometry)),
          Shape_Leng = drop_units(st_length(geometry))) %>% 
   dplyr::select(-Id)
 holes$ID <- c(1:nrow(holes))
 
-# for(i in 1:nrow(holes)){
-#   png(file = paste0("figures/holes/",i,".png"))
-#   print(ggplot(holes[i,]) + geom_sf())
-#   dev.off()
-# }
-
 holes <- holes %>% 
   filter(ID != 1553)
 
 # Load all depth shapefiles
-depth_n0_s90_w180_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-180.0_e-90.0.asc")
-depth_n0_s90_w90_e0 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-90.0_e0.0.asc")
-depth_n0_s90_w0_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w0.0_e90.0.asc")
-depth_n0_s90_w90_e180 <- raster("data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w90.0_e180.0.asc")
-depth_n90_s0_w180_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-180.0_e-90.0.asc")
-depth_n90_s0_w90_e0 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-90.0_e0.0.asc")
-depth_n90_s0_w0_e90 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w0.0_e90.0.asc")
-depth_n90_s0_w90_e180 <- raster("data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w90.0_e180.0.asc")
+depth_n0_s90_w180_e90 <- raster(paste0(general_path, "gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-180.0_e-90.0.asc"))
+depth_n0_s90_w90_e0 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w-90.0_e0.0.asc"))
+depth_n0_s90_w0_e90 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w0.0_e90.0.asc"))
+depth_n0_s90_w90_e180 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n0.0_s-90.0_w90.0_e180.0.asc"))
+depth_n90_s0_w180_e90 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-180.0_e-90.0.asc"))
+depth_n90_s0_w90_e0 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w-90.0_e0.0.asc"))
+depth_n90_s0_w0_e90 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w0.0_e90.0.asc"))
+depth_n90_s0_w90_e180 <- raster(paste0(general_path, "data/gebco_2020_ascii/gebco_2020_n90.0_s0.0_w90.0_e180.0.asc"))
 
 obj = c('depth_n90_s0_w180_e90', 'depth_n90_s0_w90_e0',
         'depth_n90_s0_w0_e90', 'depth_n90_s0_w90_e180',
@@ -77,7 +72,7 @@ select_files_r <- raster(nrows = 2, ncols = 4, xmn = -180, xmx = 180,
 seafloor_meow_deepsea_filled <- data.frame()
 problems <- c()
 
-for(h in 6:nrow(holes)){
+for(h in 6:8){
   print(h)
   
   hole_one <- holes[h,]
@@ -162,8 +157,8 @@ for(h in 6:nrow(holes)){
       new_poly <- select_polygons %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
       seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      save.image(paste0(general_path,"outputs/envt.RData"))
       rm(new_poly)
       print("One polygon")
     }
@@ -172,8 +167,8 @@ for(h in 6:nrow(holes)){
       new_poly <- select_polygons[1,] %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
       seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      save.image(paste0(general_path,"outputs/envt.RData"))
       rm(new_poly)
       print("Column polygon")}
     
@@ -257,8 +252,8 @@ for(h in 6:nrow(holes)){
       new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea_filled))
       seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled,new_poly)
       
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      save.image(paste0(general_path,"outputs/envt.RData"))
       print("Multi polygons")
       
       rm(new_poly, new_poly_closest, new_r, new_ri, types, depth_pts_empty_closest,
@@ -274,7 +269,7 @@ for(h in 6:nrow(holes)){
     
   } else{problems[length(problems)+1] <- h
   print("length(select_depth) not positive")
-  save.image("outputs/holes/envt.RData")}
+  save.image(paste0(general_path,"outputs/envt.RData"))}
   
 }
 
@@ -283,8 +278,8 @@ for(h in 6:nrow(holes)){
 ### QC & SAVE
 ################################################################################
 ### Finalize shapefile
-load("outputs/holes/results_fill_holes_problems.RData")
-load("outputs/holes/results_fill_holes.RData")
+# load("outputs/holes/results_fill_holes_problems.RData")
+# load("outputs/holes/results_fill_holes.RData")
 
 seafloor_meow_deepsea_final <- seafloor_meow_deepsea_filled %>% 
   group_by(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id,
@@ -294,5 +289,5 @@ seafloor_meow_deepsea_final <- seafloor_meow_deepsea_filled %>%
 
 xx <- st_is_valid(seafloor_meow_deepsea_final) # all true so shapefile valid!
 
-st_write(obj = seafloor_meow_deepsea_final, dsn = "outputs/holes/seafloor_meow_deepsea_final.shp")
-st_write(obj = seafloor_meow_deepsea_filled, dsn = "outputs/holes/seafloor_meow_deepsea_filled.shp")
+#st_write(obj = seafloor_meow_deepsea_final, dsn = "outputs/holes/seafloor_meow_deepsea_final.shp")
+st_write(obj = seafloor_meow_deepsea_filled, dsn = paste0(general_path, "outputs/seafloor_meow_deepsea_filled.shp"))
