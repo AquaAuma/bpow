@@ -3,11 +3,11 @@ title: "methods bpow"
 author: "Aurore A. Maureaud"
 date: '2022'
 output:
+  pdf_document: default
+  word_document: default
   html_document: 
     toc: true
     theme: flatly
-  word_document: default
-  pdf_document: default
 bibliography: bpow_refs.bib
 link-citations: yes
 ---
