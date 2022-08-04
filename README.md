@@ -1,4 +1,4 @@
-# Code and figures for "A global biogeographic regionalization for the global benthic ocean"
+# Code and figures for "A global biogeographic regionalization of the benthic ocean"
 
 ## Methods
 The methods.Rmd Rmarkdown file details all methods to create the bpow GIS layer.
