@@ -75,10 +75,9 @@ select_files_r <- raster(nrows = 2, ncols = 4, xmn = -180, xmx = 180,
 ### Loop to correct for missing areas
 ################################################################################
 
-seafloor_meow_deepsea_filled <- data.frame()
-problems <- c()
+seafloor_meow_deepsea_filled <- list()
 
-for(i in 1:nrow(holes)) {
+seafloor_meow_deepsea_filled = foreach(h = 6:8) %do% {
   print(h)
   
   hole_one <- holes[h,]
@@ -162,18 +161,18 @@ for(i in 1:nrow(holes)) {
     if(nrow(select_polygons)==1){
       new_poly <- select_polygons %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      #seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
+      #save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
+      #save.image("outputs/holes/envt.RData")
       print("One polygon")
     }
     
     if(nrow(select_polygons)>1 && dim(depth)[2]==1){
       new_poly <- select_polygons[1,] %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      #seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
+      #save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
+      #save.image("outputs/holes/envt.RData")
       print("Column polygon")}
     
     if(nrow(select_polygons)>1 && dim(depth)[2]>1){
@@ -257,9 +256,9 @@ for(i in 1:nrow(holes)) {
         mutate(poly = as.numeric(as.vector(poly)))
       new_poly <- left_join(select_polygons, new_poly, by=c("ID"="poly"))
       new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea_filled))
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
-      save.image("outputs/holes/envt.RData")
+      
+      #save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
+      #save.image("outputs/holes/envt.RData")
       print("Multi polygons")
       
       rm(new_poly_closest, new_r, new_ri, types, depth_pts_empty_closest,
@@ -277,6 +276,7 @@ for(i in 1:nrow(holes)) {
   print("length(select_depth) not positive")
   save.image("outputs/holes/envt.RData")}
   
+  new_poly
 }
 
 

@@ -4,9 +4,7 @@ rm(list = ls())
 library(sf)
 sf::sf_use_s2(FALSE)
 library(tidyverse)
-library(ggplot2)
 library(rgdal)
-library(RColorBrewer)
 library(raster)
 library(geosphere)
 library(fasterize)
@@ -15,6 +13,7 @@ library(exactextractr)
 library(Morpho)
 library(rgl)
 library(units)
+library(foreach)
 
 
 ################################################################################
@@ -69,10 +68,7 @@ select_files_r <- raster(nrows = 2, ncols = 4, xmn = -180, xmx = 180,
 ### Loop to correct for missing areas
 ################################################################################
 
-seafloor_meow_deepsea_filled <- data.frame()
-problems <- c()
-
-for(h in 6:8){
+seafloor_meow_deepsea_filled = foreach(h = 6:8) %do% {
   print(h)
   
   hole_one <- holes[h,]
@@ -156,20 +152,20 @@ for(h in 6:8){
     if(nrow(select_polygons)==1){
       new_poly <- select_polygons %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
-      save.image(paste0(general_path,"outputs/envt.RData"))
-      rm(new_poly)
+      # seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
+      # save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      # save.image(paste0(general_path,"outputs/envt.RData"))
+      # rm(new_poly)
       print("One polygon")
     }
     
     if(nrow(select_polygons)>1 && dim(depth)[2]==1){
       new_poly <- select_polygons[1,] %>% st_drop_geometry()
       st_geometry(new_poly) <- st_geometry(holes[h,])
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
-      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
-      save.image(paste0(general_path,"outputs/envt.RData"))
-      rm(new_poly)
+      # seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
+      # save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      # save.image(paste0(general_path,"outputs/envt.RData"))
+      # rm(new_poly)
       print("Column polygon")}
     
     if(nrow(select_polygons)>1 && dim(depth)[2]>1){
@@ -220,7 +216,10 @@ for(h in 6:8){
       # rasterize the closest points and aggregate a higher scale
       # create new grid with lower resolution
       # same for rasters
-      new_r <- aggregate(depth, fact = 4, fun = mean)
+      if(nrow(depth)<4){new_r <- aggregate(depth, fact = 2, fun = mean)
+      } else {
+        new_r <- aggregate(depth, fact = 4, fun = mean)
+      }
       
       overlap_ri <- coverage_fraction(new_r, holes[h,])[[1]]
       overlap_ri[overlap_ri==0] <- NA
@@ -249,14 +248,14 @@ for(h in 6:8){
       new_poly <- new_poly %>% 
         mutate(poly = as.numeric(as.vector(poly)))
       new_poly <- left_join(select_polygons, new_poly, by=c("ID"="poly"))
-      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea_filled))
-      seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled,new_poly)
-      
-      save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
-      save.image(paste0(general_path,"outputs/envt.RData"))
+      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea))
+      # seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled,new_poly)
+      # 
+      # save(seafloor_meow_deepsea_filled, file=paste0(general_path,"outputs/results_fill_holes.RData"))
+      # save.image(paste0(general_path,"outputs/envt.RData"))
       print("Multi polygons")
       
-      rm(new_poly, new_poly_closest, new_r, new_ri, types, depth_pts_empty_closest,
+      rm(new_poly_closest, new_r, new_ri, types, depth_pts_empty_closest,
          depth_pts_empty_df, depth_pts_empty_mat,
          depths_empty, depths_full,select_polygons_merged,
          xx, depth_pts_mat)
@@ -271,6 +270,7 @@ for(h in 6:8){
   print("length(select_depth) not positive")
   save.image(paste0(general_path,"outputs/envt.RData"))}
   
+  new_poly
 }
 
 
