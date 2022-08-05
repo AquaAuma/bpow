@@ -3,11 +3,11 @@ title: "methods bpow"
 author: "Aurore A. Maureaud"
 date: '2022'
 output:
-  pdf_document: default
-  word_document: default
   html_document: 
     toc: true
     theme: flatly
+  word_document: default
+  pdf_document: default
 bibliography: bpow_refs.bib
 link-citations: yes
 ---
@@ -180,7 +180,11 @@ library(here)
     ![](figures/methods/3D-NNA_1.png){width="179"} ![](figures/methods/3D-NNA_2.png){width="198"} ![](figures/methods/3D-NNA_3.png){width="213"}
 
 ```{r  code e., code = readLines(here("./code/create_layer/e.add_missing_regions.R")), class.source="small", eval = FALSE}
+```
 
+-   Step \#5: finalize the shapefile
+
+```{r code e., code = readLines(here("./code/create_layer/f.full_areas.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 9: Quality checks

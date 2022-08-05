@@ -78,7 +78,7 @@ select_files_r <- raster(nrows = 2, ncols = 4, xmn = -180, xmx = 180,
 seafloor_meow_deepsea_filled <- data.frame()
 problems <- c()
 
-for(h in 601:602) {
+for(h in 1:nrow(holes)) {
   print(h)
   
   hole_one <- holes[h,]
@@ -279,21 +279,4 @@ for(h in 601:602) {
   
 }
 
-
-################################################################################
-### QC & SAVE
-################################################################################
-### Finalize shapefile
-# load("outputs/holes/results_fill_holes_problems.RData")
-# load("outputs/holes/results_fill_holes.RData")
-
-seafloor_meow_deepsea_final <- st_as_sf(do.call("rbind", seafloor_meow_deepsea_filled)) %>% 
-  group_by(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id,
-           had_n, had_id) %>%
-  summarize(geometry = st_union(geometry)) %>% 
-  ungroup()
-
-xx <- st_is_valid(seafloor_meow_deepsea_final) # all true so shapefile valid!
-
-st_write(obj = seafloor_meow_deepsea_final, dsn = "outputs/holes/seafloor_meow_deepsea_final.shp")
-
+save(seafloor_meow_deepsea_filled, file = "outputs/holes/seafloor_meow_deepsea_filled.RData")
