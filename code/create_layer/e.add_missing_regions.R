@@ -224,7 +224,7 @@ for(h in 601:602) {
       # rasterize the closest points and aggregate a higher scale
       # create new grid with lower resolution
       # same for rasters
-      if(nrow(depth)<4){new_r <- aggregate(depth, fact = 2, fun = mean)
+      if(nrow(depth)<4 | ncol(depth)<4 ){new_r <- depth
       } else {
         new_r <- aggregate(depth, fact = 4, fun = mean)
       }
@@ -256,7 +256,7 @@ for(h in 601:602) {
       new_poly <- new_poly %>% 
         mutate(poly = as.numeric(as.vector(poly)))
       new_poly <- left_join(select_polygons, new_poly, by=c("ID"="poly"))
-      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea_filled))
+      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea))
       seafloor_meow_deepsea_filled <- rbind(seafloor_meow_deepsea_filled, new_poly)
       save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
       save.image("outputs/holes/envt.RData")
