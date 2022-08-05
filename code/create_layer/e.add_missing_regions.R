@@ -78,7 +78,7 @@ select_files_r <- raster(nrows = 2, ncols = 4, xmn = -180, xmx = 180,
 seafloor_meow_deepsea_filled <- data.frame()
 problems <- c()
 
-for(i in 1:nrow(holes)) {
+for(h in 601:602) {
   print(h)
   
   hole_one <- holes[h,]

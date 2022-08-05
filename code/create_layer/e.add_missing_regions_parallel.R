@@ -255,7 +255,7 @@ seafloor_meow_deepsea_filled = foreach(h = 6:8) %do% {
       new_poly <- new_poly %>% 
         mutate(poly = as.numeric(as.vector(poly)))
       new_poly <- left_join(select_polygons, new_poly, by=c("ID"="poly"))
-      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea_filled))
+      new_poly <- st_as_sf(new_poly, crs = st_crs(seafloor_meow_deepsea))
       
       #save(seafloor_meow_deepsea_filled, file="outputs/holes/results_fill_holes.RData")
       #save.image("outputs/holes/envt.RData")
