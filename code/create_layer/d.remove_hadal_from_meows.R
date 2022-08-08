@@ -141,7 +141,7 @@ for(h in 1:length(hadal_ecoregions)){
   depth_poly <- exact_extract(depth, hadal_one, include_xy = T)
   
   new_r <- aggregate(depth, fact = 4, fun = min)
-  new_r[new_r>(-6500)] <- NA
+  new_r[new_r>(-5500)] <- NA
   
   overlap_ri <- coverage_fraction(new_r, hadal_one)[[1]]
   overlap_ri[overlap_ri==0] <- NA
@@ -217,14 +217,14 @@ for(h in 1:length(hadal_ecoregions)){
       new_poly <- st_as_sf(cbind(hadal[10,],new_poly))
       hadal_poly <- rbind(hadal_poly, new_poly)}
   
-    save.image("outputs/hadal/remove_hadal_from_coastal.RData")
+    save.image("outputs/hadal/remove_hadal_from_coastal_ter.RData")
     
     rm(corr_poly, new_poly, overlap_ri, depth_poly, depth, new_ri, new_r,
        select_depth, overlap_rr, bbox_r, bbox_one, hadal_one)
   }
 }
 
-load("outputs/hadal/remove_hadal_from_coastal.RData")
+load("outputs/hadal/remove_hadal_from_coastal_ter.RData")
 
 eco_hadal <- st_make_valid(eco_no_hadal) %>%
   mutate(had_id = NA,
@@ -250,6 +250,6 @@ eco_hadal <- eco_hadal %>%
 eco_hadal$ID <- 1:nrow(eco_hadal)
 
 # save file
-st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3.shp")
+st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_limit_5500.shp")
 
 
