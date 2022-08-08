@@ -11,6 +11,7 @@ Folder with the R codes used for the analyses separated into two parts:
 - c.layer_post-processing_1.R
 - d.remove_hadal_from_meows.R remove hadal zones after the first Arc processing
 - e.add_missing_regions.R 3D nearest neighbor analysis on all missing zones after the first Arc processing
+- f.full_areas.R pulls together all polygons from d. and e. to create the bpow shapefile
 2. technical validation
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
@@ -24,4 +25,5 @@ Folder with base data used for the analyses
 1. arcpro outputs per processing
 2. deep_sea layer files after R code a.
 3. bpow includes the versions of the layer up to the steps detailed in methods.Rmd
-4. hadal includes the tempoerary data from the for loop in d.
+4. hadal includes the temporary data from the for loop in d.
+5. holes includes all the outputs from the HPC run from e. before f. 
