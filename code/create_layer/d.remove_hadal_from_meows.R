@@ -1,3 +1,6 @@
+
+rm(list = ls())
+
 # load libraries
 library(sf)
 library(tidyverse)
@@ -104,6 +107,20 @@ hadal <- data.frame(had_n) %>%
   rename(had_n = `c..Aleutian.Japan....Philippine....Mariana....Bougainville.New.Hebrides...`)
 hadal_poly <- data.frame()
 
+abyssal <- data.frame(unique(eco[eco$type=="abyssal",]$prov_n)) %>% 
+  mutate(type = "abyssal",
+         ID = c(180473:180486),
+         prov_id = unique(eco[eco$type =="abyssal",]$prov_id),
+         eco_n = NA_character_,
+         eco_id = NA,
+         rlm = NA_character_,
+         rlm_id = NA,
+         had_id = NA,
+         had_n = NA_character_) %>% 
+  rename( prov_n = `unique.eco.eco.type.....abyssal.....prov_n.`)
+abyssal_poly <- data.frame()
+
+
 for(h in 1:length(hadal_ecoregions)){
   
   print(h)
@@ -140,8 +157,9 @@ for(h in 1:length(hadal_ecoregions)){
   
   depth_poly <- exact_extract(depth, hadal_one, include_xy = T)
   
-  new_r <- aggregate(depth, fact = 4, fun = min)
-  new_r[new_r>(-5500)] <- NA
+  # save the hadal polygon
+  new_r <- aggregate(depth, fact = 2, fun = min)
+  new_r[new_r>(-6500)] <- NA
   
   overlap_ri <- coverage_fraction(new_r, hadal_one)[[1]]
   overlap_ri[overlap_ri==0] <- NA
@@ -216,15 +234,103 @@ for(h in 1:length(hadal_ecoregions)){
         dplyr::select(-ID)
       new_poly <- st_as_sf(cbind(hadal[10,],new_poly))
       hadal_poly <- rbind(hadal_poly, new_poly)}
+    
+  }
   
-    save.image("outputs/hadal/remove_hadal_from_coastal_ter.RData")
+  # remove abyssal from coastal
+  new_r2 <- aggregate(depth, fact = 2, fun = min)
+  new_r2[new_r2>(-3500)] <- NA
+  new_r2[new_r2<(-6500)] <- NA
+  
+  overlap_ri2 <- coverage_fraction(new_r2, hadal_one)[[1]]
+  overlap_ri2[overlap_ri2==0] <- NA
+  overlap_ri2[overlap_ri2>0] <- 1
+  new_ri2 <- new_r2*overlap_ri2
+  
+  if(length(unique(new_ri2))!=0){
+    new_poly2 <- rasterToPolygons(new_ri2)
+    new_poly2 <- st_as_sf(new_poly2, crs = st_crs(eco)) %>%
+      mutate(ID = 1) %>%
+      group_by(ID) %>%
+      summarize(geometry = st_union(geometry))
+    
+    if(st_is_valid(new_poly2)==FALSE){
+      new_poly2 <- st_make_valid(new_poly2)
+    }
+    corr_poly2 <- st_difference(hadal_one, new_poly2)
+    
+    # modify coastal ecoregion
+    st_geometry(eco_no_hadal[which(eco_no_hadal$eco_id == hadal_ecoregions[h]),]) <- st_geometry(corr_poly2)
+    
+    if (hadal_ecoregions[h] %in% c(46,47,48,51,53,54)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[2,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+      # two abyssal regions for 135
+    } else if (hadal_ecoregions[h] %in% c(121,122,123,125,127,129,130)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[3,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(128,131)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[4,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(134,136,146,148,157,195,196)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[6,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(60,166,167,168,171,175,176,177,178,111)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[14,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(119,120,132)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[7,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(63,64,65,68)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[12,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h] %in% c(219,220)){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID)
+      new_poly2 <- st_as_sf(cbind(abyssal[8,],new_poly2))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2)
+    } else if (hadal_ecoregions[h]==135){
+      new_poly2 <- new_poly2 %>%
+        dplyr::select(-ID) %>% 
+        st_cast(to = "POLYGON") %>% 
+        mutate(latitude = st_coordinates(st_centroid(geometry))[,2])
+      new_poly2_a <- new_poly2 %>% 
+        filter(latitude>(-2)) %>% 
+        dplyr::select(-latitude) %>% 
+        st_union()
+      new_poly2_b <- new_poly2 %>% 
+        filter(latitude<(-2)) %>% 
+        dplyr::select(-latitude) %>% 
+        st_union()
+      new_poly2_a <- st_as_sf(cbind(abyssal[3,],new_poly2_a))
+      new_poly2_b <- st_as_sf(cbind(abyssal[6,],new_poly2_b))
+      abyssal_poly <- rbind(abyssal_poly, new_poly2_a, new_poly2_b)
+      rm(new_poly2_a, new_poly2_b)
+    }
     
     rm(corr_poly, new_poly, overlap_ri, depth_poly, depth, new_ri, new_r,
-       select_depth, overlap_rr, bbox_r, bbox_one, hadal_one)
+       select_depth, overlap_rr, bbox_r, bbox_one, hadal_one,
+       new_ri2, new_poly2, new_r2, overlap_ri2)
   }
+  save.image("outputs/hadal/remove_hadal_abyssal_from_coastal.RData")
+  
 }
 
-load("outputs/hadal/remove_hadal_from_coastal_ter.RData")
+load("outputs/hadal/remove_hadal_abyssal_from_coastal.RData")
 
 eco_hadal <- st_make_valid(eco_no_hadal) %>%
   mutate(had_id = NA,
@@ -237,7 +343,13 @@ hadal_poly <- st_make_valid(st_as_sf(hadal_poly)) %>%
   summarize(geometry = st_union(geometry)) %>%
   dplyr::select(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id, had_n, had_id, geometry)
 
-eco_hadal <- rbind(eco_hadal, hadal_poly)
+abyssal_poly <- st_make_valid(st_as_sf(abyssal_poly)) %>%
+  rename(rlm_n = rlm) %>%
+  group_by(type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id, ID, had_id, had_n) %>%
+  summarize(geometry = st_union(geometry)) %>%
+  dplyr::select(ID, type, prov_n, prov_id, eco_n, eco_id, rlm_n, rlm_id, had_n, had_id, geometry)
+
+eco_hadal <- rbind(eco_hadal, hadal_poly, abyssal_poly)
 # transform geometry collection into multipolygon
 st_geometry(eco_hadal[60226,]) <- st_geometry(st_collection_extract(eco_hadal[60226,], type = "POLYGON"))
 st_geometry(eco_hadal[100307,]) <- st_geometry(st_collection_extract(eco_hadal[100307,], type = "POLYGON"))
@@ -250,6 +362,6 @@ eco_hadal <- eco_hadal %>%
 eco_hadal$ID <- 1:nrow(eco_hadal)
 
 # save file
-st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_limit_5500.shp")
+st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_abyssal_corr.shp")
 
 
