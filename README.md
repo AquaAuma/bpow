@@ -16,12 +16,12 @@ Folder with the R codes used for the analyses separated into two parts:
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
 ## Data
-data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022
-data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022
+-data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022
+-data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022
 
 ## Outputs
-outputs/arcpro/ outputs per processing
-outputs/deep_sea/ layer files after R code a.
-outputs/bpow/ includes the versions of the layer up to the steps detailed in methods.Rmd
-outputs/hadal/ includes the temporary data from the for loop in d.
-outputs/holes/ includes all the outputs from the HPC run from e. before f. 
+-outputs/arcpro/ outputs per processing
+-outputs/deep_sea/ layer files after R code a.
+-outputs/bpow/ includes the versions of the layer up to the steps detailed in methods.Rmd
+-outputs/hadal/ includes the temporary data from the for loop in d.
+-outputs/holes/ includes all the outputs from the HPC run from e. before f. 
