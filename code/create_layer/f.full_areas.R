@@ -136,4 +136,4 @@ new_2 <- cbind(new_2, pb_2) %>%
   ungroup()
 st_geometry(bpow[24,]) <- st_geometry(new_2)
 
-st_write(obj = bpow, dsn = "outputs/bpow/bpow_p8s5_limit_5500.shp")
+st_write(obj = bpow, dsn = "outputs/bpow/bpow_p8s5_limit_5500_corr.shp")
