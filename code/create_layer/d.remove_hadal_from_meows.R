@@ -363,5 +363,3 @@ eco_hadal$ID <- 1:nrow(eco_hadal)
 
 # save file
 st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_abyssal_corr.shp")
-
-
