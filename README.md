@@ -16,14 +16,12 @@ Folder with the R codes used for the analyses separated into two parts:
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
 ## Data
-Folder with base data used for the analyses
-- meows_ecos: Marine Ecoregions of the World from Spalding et al., 2007 https://academic.oup.com/bioscience/article/57/7/573/238419
-- goods_provinces: Bathyal and Abyssal provinces from Watling et al., 2013 https://www.sciencedirect.com/science/article/pii/S0079661112001693
-- gebco_2020_ascii: depth raster of the world from the GEBCO project https://www.gebco.net/
+data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022
+data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022
 
 ## Outputs
-1. arcpro outputs per processing
-2. deep_sea layer files after R code a.
-3. bpow includes the versions of the layer up to the steps detailed in methods.Rmd
-4. hadal includes the temporary data from the for loop in d.
-5. holes includes all the outputs from the HPC run from e. before f. 
+outputs/arcpro/ outputs per processing
+outputs/deep_sea/ layer files after R code a.
+outputs/bpow/ includes the versions of the layer up to the steps detailed in methods.Rmd
+outputs/hadal/ includes the temporary data from the for loop in d.
+outputs/holes/ includes all the outputs from the HPC run from e. before f. 
