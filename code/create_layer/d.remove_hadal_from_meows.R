@@ -247,7 +247,7 @@ for(h in 1:length(hadal_ecoregions)){
   overlap_ri2[overlap_ri2>0] <- 1
   new_ri2 <- new_r2*overlap_ri2
   
-  if(length(unique(new_ri2))!=0){
+  if(length(unique(new_ri2))!=0 & length(unique(new_ri))!=0){
     new_poly2 <- rasterToPolygons(new_ri2)
     new_poly2 <- st_as_sf(new_poly2, crs = st_crs(eco)) %>%
       mutate(ID = 1) %>%
@@ -257,7 +257,7 @@ for(h in 1:length(hadal_ecoregions)){
     if(st_is_valid(new_poly2)==FALSE){
       new_poly2 <- st_make_valid(new_poly2)
     }
-    corr_poly2 <- st_difference(hadal_one, new_poly2)
+    corr_poly2 <- st_difference(corr_poly, new_poly2)
     
     # modify coastal ecoregion
     st_geometry(eco_no_hadal[which(eco_no_hadal$eco_id == hadal_ecoregions[h]),]) <- st_geometry(corr_poly2)
@@ -362,4 +362,5 @@ eco_hadal <- eco_hadal %>%
 eco_hadal$ID <- 1:nrow(eco_hadal)
 
 # save file
-st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_abyssal_corr.shp")
+st_write(obj = eco_hadal, dsn="outputs/hadal/provinces_p7s3_abyssal_corr.shp",
+         append = FALSE)
