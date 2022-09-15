@@ -201,12 +201,14 @@ library(here)
 -   Step \#2: Fix the boundaries of the layer
 
 +-----------------------------------------------------------------------+
-| `-ArcGIS: Pairwise Integrate`                                         |
+| `-ArcGIS:`                                                            |
 +=======================================================================+
 +-----------------------------------------------------------------------+
 
 ## Part 10: Remove land
 
 *Performed on ArcGIS Pro*
+
+`-ArcGIS: Pairwise Erase, input = land, erase = bpow_s8p5`
 
 # References
