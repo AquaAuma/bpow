@@ -22,7 +22,7 @@ library(foreach)
 ### Load data & fix shapefile attributes
 ################################################################################
 # load provinces_p7s3
-seafloor_meow_deepsea <- st_read("outputs/hadal/provinces_p7s3.shp")
+seafloor_meow_deepsea <- st_read("outputs/hadal/provinces_p7s3_abyssal_corr.shp")
 
 # load holes shapefile
 holes <- st_read("outputs/arcpro/post-processing_1/holes_p6s2_correct.shp") %>% 
@@ -32,6 +32,7 @@ holes <- st_read("outputs/arcpro/post-processing_1/holes_p6s2_correct.shp") %>%
   dplyr::select(-Id)
 holes$ID <- c(1:nrow(holes))
 
+st_write(obj = holes, dsn = "outputs/holes/holes_p6s2_id.shp")
 # for(i in 1:nrow(holes)){
 #   png(file = paste0("figures/holes/",i,".png"))
 #   print(ggplot(holes[i,]) + geom_sf())
@@ -214,7 +215,10 @@ for(h in 1:nrow(holes)) {
       
       types <- c(select_polygons$ID)
       pts <- st_as_sf(depth_pts_df, coords = c("x","y"), crs= st_crs(select_polygons))
+      pts$id_pt <- 1:nrow(pts)
       tt <- unlist(st_intersects(pts, select_polygons, sparse=T))
+      pts <- st_join(pts, select_polygons) %>% 
+        st_drop_geometry()
       
       depth_pts_empty_closest <- depth_pts_empty_closest %>% 
         mutate(x_closest = depth_pts_empty_closest$x[depth_pts_empty_closest$V4],
