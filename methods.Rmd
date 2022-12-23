@@ -195,6 +195,9 @@ library(here)
 
 |                               |
 |-------------------------------|
+| `-ArcGIS: Pariwise Dissolve, input = bpow_s8p5, by=ID`|
+| `-ArcGIS: Merge`              |
+| `-ArcGIS: Pariwise Intersect` |
 | `-ArcGIS: Pairwise Integrate` |
 
 +=======================================================================+ +-----------------------------------------------------------------------+

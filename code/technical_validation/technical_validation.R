@@ -35,7 +35,7 @@ library(ggpmisc)
 ################################################################################
 
 # load biogeographic layer
-eco <- st_read("~/Yale University/Marine Biogeography/outputs/remove_hadal/seafloor_meow_deepsea_w_hadal_correctedgeom_10202021.shp")
+eco <- st_read("/Users/auroremaureaud/Documents/bpow_p9_post_op.shp")
 
 # load species data
 spp <- c("Actinostola callosa","Pseudoliparis swirei","Callinectes sapidus","Centroscymnus coelolepis",
