@@ -3,11 +3,11 @@ title: "methods bpow"
 author: "Aurore A. Maureaud"
 date: '2022'
 output:
+  pdf_document: default
+  word_document: default
   html_document: 
     toc: true
     theme: flatly
-  word_document: default
-  pdf_document: default
 bibliography: bpow_refs.bib
 link-citations: yes
 ---
@@ -184,7 +184,7 @@ library(here)
 
 -   Step \#5: finalize the shapefile
 
-```{r code e., code = readLines(here("./code/create_layer/f.full_areas.R")), class.source="small", eval = FALSE}
+```{r code f., code = readLines(here("./code/create_layer/f.full_areas.R")), class.source="small", eval = FALSE}
 ```
 
 ## Part 9: Quality checks
@@ -196,9 +196,11 @@ library(here)
 |                               |
 |-------------------------------|
 | `-ArcGIS: Pariwise Dissolve, input = bpow_s8p5, by=ID`|
-| `-ArcGIS: Merge`              |
-| `-ArcGIS: Pariwise Intersect` |
-| `-ArcGIS: Pairwise Integrate` |
+| `-QGIS: Dissolve` |
+
+```{r code h., code = readLines(here("./code/create_layer/h.fix_geometry_prior_clipp.R")), class.source="small", eval = FALSE}
+```
+
 
 +=======================================================================+ +-----------------------------------------------------------------------+
 
@@ -208,12 +210,19 @@ library(here)
 |------------|
 | `-ArcGIS:` |
 
+
 +=======================================================================+ +-----------------------------------------------------------------------+
 
 ## Part 10: Remove land
 
 *Performed on ArcGIS Pro*
 
-`-ArcGIS: Pairwise Erase, input = land, erase = bpow_s8p5`
+|                                                             |
+|-------------------------------------------------------------|
+| `-ArcGIS: Pairwise Erase, input = land, erase = bpow_s8p5`  |
+| `-QGIS: Difference with ne_10land layer from natural earth` |
+
+```{r code i., code = readLines(here("./code/create_layer/i.add_attributes.R")), class.source="small", eval = FALSE}
+```
 
 # References
