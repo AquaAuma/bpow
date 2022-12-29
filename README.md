@@ -23,7 +23,7 @@ Folder with figure outputs
 - figures/figure_2/ inset maps
 - figures/figure_3/ global layer by bathymetric type
 - figures/figure_4/ global maps of technical validation + summary results
-= figures/methods/ maps snapshots from Arc of Q.
+- figures/methods/ maps snapshots from Arc of Q.
 
 ## Data
 - data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022 https://www.gbif.org
@@ -38,3 +38,8 @@ Folder with figure outputs
 - outputs/bpow/ includes the versions of the layer up to the steps detailed in methods.Rmd
 - outputs/hadal/ includes the temporary data from the for loop in d.
 - outputs/holes/ includes all the outputs from the HPC run from e. before f. 
+
+## Contributors
+- code: Aurore A. Maureaud
+- methods: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Kevin Winner, Griffy Vigneron
+- main contact: Aurore Maureaud, aurore.aqua@gmail.com
