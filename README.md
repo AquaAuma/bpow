@@ -18,6 +18,13 @@ Folder with the R codes used for the analyses separated into two parts:
 2. technical validation
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
+## Figures
+Folder with figure outputs
+- figures/figure_2/ inset maps
+- figures/figure_3/ global layer by bathymetric type
+- figures/figure_4/ global maps of technical validation + summary results
+= figures/methods/ maps snapshots from Arc of Q.
+
 ## Data
 - data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022 https://www.gbif.org
 - data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022 https://obis.org
