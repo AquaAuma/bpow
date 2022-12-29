@@ -25,7 +25,7 @@ library(gridExtra)
 
 
 # load layer
-eco <- st_read("~/Yale University/Marine Biogeography/outputs/remove_hadal/seafloor_meow_deepsea_w_hadal_correctedgeom_10202021.shp")
+eco <- st_read("outputs/bpow_p10_attributes.shp")
 
 
 ################################################################################
@@ -34,7 +34,7 @@ eco <- st_read("~/Yale University/Marine Biogeography/outputs/remove_hadal/seafl
 map_types <- ggplot(eco[eco$type == "hadal",]) + geom_sf(fill = "black", color = NA) +
   geom_sf(data = eco[eco$type!="hadal",], aes(fill = type), color = NA) + theme_minimal() +
   geom_sf(data = world, fill = "white", color=NA) +
-  coord_sf(crs = '+proj=moll') + 
+  #coord_sf(crs = '+proj=moll') + 
   scale_fill_manual(values = c(brewer.pal(9,"Blues")[9],brewer.pal(9, "YlGnBu")[c(6,4)]), 
                     labels = c("Abyssal","Bathyal","Coastal")) +
   labs(fill = "") + theme(legend.position = "none")
@@ -46,7 +46,7 @@ map_abyssal <- ggplot() +
   geom_sf(data = eco[eco$type!="abyssal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco_abyssal, aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color = NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
+  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_aby)) +
   labs(fill = "") + theme(legend.position = "none")
 
@@ -56,76 +56,54 @@ map_bathyal <- ggplot() +
   geom_sf(data = eco[eco$type!="bathyal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco[eco$type == "bathyal",],aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color = NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
+  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_bat)) +
   labs(fill = "") + theme(legend.position = "none")
 
-# map for coastal
-col_coast <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="MEOW",]$eco_n))
-map_coastal <- ggplot() +
-  geom_sf(data = eco[eco$type != "MEOW",], fill = "lightgrey", color = NA) +
-  geom_sf(data = eco[eco$type == "MEOW",],aes(fill = eco_n), color = NA) + theme_minimal() +
-  geom_sf(data = world, color=NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
-  scale_fill_manual(values = sample(col_coast)) +
-  labs(fill = "") + theme(legend.position = "none")
-
 # map for coastal provinces
-col_coast <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="MEOW",]$eco_n))
-map_coastal_prov <- ggplot() +
-  geom_sf(data = eco[eco$type != "MEOW",], fill = "lightgrey", color = NA) +
-  geom_sf(data = eco[eco$type == "MEOW",],aes(fill = as.factor(prov_id)), color = NA) + theme_minimal() +
+col_coast <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="coastal",]$prov_n))
+map_coastal <- ggplot() +
+  geom_sf(data = eco[eco$type != "coastal",], fill = "lightgrey", color = NA) +
+  geom_sf(data = eco[eco$type == "coastal",],aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color=NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
+  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_coast)) +
   labs(fill = "") + theme(legend.position = "none")
 
 
 # map for hadal
-col_had <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="hadal",]$had_n))
+col_had <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="hadal",]$prov_n))
 map_had <- ggplot() +
-  geom_sf(data = eco[eco$type == "hadal",], aes(fill = had_n), color = NA) + 
+  geom_sf(data = eco[eco$type == "hadal",], aes(fill = prov_n), color = NA) + 
   geom_sf(data = eco[eco$type!="hadal",], fill = "lightgrey", color = NA) +
   geom_sf(data = world, color=NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
+  #coord_sf(crs = '+proj=moll') +
   theme_minimal() +
   scale_fill_manual(values = sample(col_had)) +
   labs(fill = "") + theme(legend.position = "none") 
 
-# png(filename = "figures/figures_MS/figure1_fix_hadal.png",
-#     width = 16*200, height = 10*200, res = 200)
-# print(egg::ggarrange(map_types, map_abyssal, map_bathyal, map_coastal,
-#                labels = c("A","B","C","D"), nrow = 2))
-# dev.off()
-
-
 # Map one by one for high resolution
-png(filename = "figures/figures_MS/figure1_coastal.png",
+png(filename = "figures/figure_3/figure3_coastal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_coastal)
 dev.off()
 
-png(filename = "figures/figures_MS/figure1_coastal_prov.png",
-    width = 16*200, height = 10*200, res = 200)
-print(map_coastal_prov)
-dev.off()
-
-png(filename = "figures/figures_MS/figure1_bathyal.png",
+png(filename = "figures/figure_3/figure3_bathyal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_bathyal)
 dev.off()
 
-png(filename = "figures/figures_MS/figure1_abyssal.png",
+png(filename = "figures/figure_3/figure3_abyssal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_abyssal)
 dev.off()
 
-png(filename = "figures/figures_MS/figure1_hadal.png",
+png(filename = "figures/figure_3/figure3_hadal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_had)
 dev.off()
 
-png(filename = "figures/figures_MS/figure1_types.png",
+png(filename = "figures/figure_3/figure3_types.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_types)
 dev.off()
