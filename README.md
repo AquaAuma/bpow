@@ -1,7 +1,10 @@
 # Code and figures for "A global biogeographic regionalization of the benthic ocean"
 
 ## Methods
-The methods.Rmd Rmarkdown file details all methods to create the bpow GIS layer.
+The methods.Rmd Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer.
+
+## Refs
+The file `bpow_refs.bib` lists important references cited in the methods.Rmd file.
 
 ## Code
 Folder with the R codes used for the analyses separated into two parts:
@@ -16,8 +19,11 @@ Folder with the R codes used for the analyses separated into two parts:
 - technical_validation.R to test the layer on 9 species occurrences and expert knowledge
 
 ## Data
-- data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022
-- data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022
+- data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022 https://www.gbif.org
+- data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022 https://obis.org
+- data/gebco_2020_ascii/ GEBCO downloaded from https://www.gebco.net
+- data/meows_ecos/ MEOWs downloaded from https://www.marineregions.org/, data linked to Spalding et al. (2007)
+- data/goods_provinces/ access given by Les Watling, data linked to Watling et al. (2013)
 
 ## Outputs
 - outputs/arcpro/ outputs per processing

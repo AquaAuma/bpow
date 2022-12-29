@@ -7,7 +7,11 @@ bpow.Rproj
 data/gebco_2020_ascii/*
 data/goods_provinces/*
 data/meows_ecos/*
-outputs/*
+outputs/arcpro/*
+outputs/bpow/*
+outputs/deep_sea/*
+outputs/holes/*
+outputs/hadal/*
 figures/holes/*
 figures/all_regions/*
 data/MOL_Land_Layer_Countries_Fixed/*
