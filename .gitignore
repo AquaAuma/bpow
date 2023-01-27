@@ -5,7 +5,11 @@
 bpow.Rproj
 
 data/*
-outputs/*
+outputs/arcpro/*
+outputs/bpow/*
+outputs/deep_sea/*
+outputs/hadal/*
+outputs/holes/*
 
 .DS_Store
 **/.DS_Store
