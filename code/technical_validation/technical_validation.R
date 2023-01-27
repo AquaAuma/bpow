@@ -1,7 +1,7 @@
 ################################################################################
 #### Coding and data processing: Aurore Maureaud
 #### Technical validation of the layer product
-#### March 2022
+#### January 2023
 ################################################################################
 rm(list = ls())
 
@@ -28,6 +28,8 @@ library(data.table)
 library(occCite)
 library(ggnewscale)
 library(ggpmisc)
+library(gridExtra) 
+library(ggeffects)
 
 
 ################################################################################
@@ -35,7 +37,7 @@ library(ggpmisc)
 ################################################################################
 
 # load biogeographic layer
-eco <- st_read("/Users/auroremaureaud/Documents/bpow_p9_post_op.shp")
+eco <- st_read("outputs/bpow_p10_attributes.shp")
 
 # load species data
 spp <- c("Actinostola callosa","Pseudoliparis swirei","Callinectes sapidus","Centroscymnus coelolepis",
@@ -105,6 +107,9 @@ occ <- rbind(obis, gbif) %>%
   group_by(year, month, day, latitude, longitude, species) %>% 
   distinct()
 
+# load FAO fishing areas
+fao <- st_read("/Users/auroremaureaud/Documents/Yale University/Marine Biogeography/regions_base/fao/World_Fao_Zones.shp")
+
 
 ################################################################################
 ### 2. Intersection with layer
@@ -113,6 +118,7 @@ occ <- rbind(obis, gbif) %>%
 occ_sf <- occ %>% 
   st_as_sf(coords = c("longitude", "latitude"), crs = st_crs(eco))
 occ_sf_layer <- st_join(occ_sf, eco, left=TRUE, largest=FALSE)
+occ_sf_layer <- st_join(occ_sf_layer, fao, left = TRUE, largest = TRUE)
 
 occ_sf_land <- occ_sf_layer %>% 
   st_drop_geometry() %>% 
@@ -128,96 +134,39 @@ occ_sf_eco <- occ_sf_layer %>%
 
 
 ################################################################################
-### 3. Map of regions per species
-################################################################################
-spp <- sort(unique(occ$species))
-
-for(i in 1:length(spp)){
-  spp_xx <- occ_sf_layer %>%
-    st_drop_geometry() %>% 
-    filter(species == spp[i]) %>% 
-    group_by(ID) %>% 
-    summarize(nb = length(ID))
-  
-  eco_xx <- left_join(eco, spp_xx, by = "ID") %>% 
-    filter(!is.na(nb))
-  
-  png(filename = paste0("figures/figure_4/technical_validation_",spp[i],".png"),
-      width = 16*200, height = 10*200, res = 200)
-  print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
-          geom_sf(data = occ_sf_layer[occ_sf_layer$species == spp[i],], col = "black", shape = 3, size = 4, lwd = 3) +
-          geom_sf(data = world, fill = "grey", color=NA) +  coord_sf(crs = '+proj=moll') + 
-          theme_minimal() +
-          scale_fill_gradient(low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8]) +
-          theme(legend.title = element_blank(),
-                legend.key.size = unit(1, 'cm'),
-                legend.key.height = unit(1, 'cm'),
-                legend.key.width = unit(1, 'cm'),
-                legend.text = element_text(size=20)))
-  dev.off()
-}
-
-
-################################################################################
-### 4. Map of blue crab
-################################################################################
-
-i = 3
-spp_xx <- gbif_sf_layer %>%
-  st_drop_geometry() %>% 
-  filter(species == spp[i]) %>% 
-  group_by(ID) %>% 
-  summarize(nb = length(ID))
-
-eco_xx <- left_join(eco, spp_xx, by = "ID") %>% 
-  filter(!is.na(nb))
-
-png(filename = paste0("figures/figures_MS_data/technical_validation_2_",spp[i],".png"),
-    width = 16*200, height = 10*200, res = 200)
-print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
-        geom_sf(data = gbif_sf_layer[gbif_sf_layer$species == spp[i],], col = "black", shape = 3, size = 4, lwd = 3) +
-        geom_sf(data = world, fill = "grey", color=NA) +  coord_sf(crs = '+proj=moll') + 
-        theme_minimal() +
-        scale_fill_gradient(low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8],
-                            trans = "log10") +
-        theme(legend.title = element_blank(),
-              legend.key.size = unit(1, 'cm'),
-              legend.key.height = unit(1, 'cm'),
-              legend.key.width = unit(1, 'cm'),
-              legend.text = element_text(size=20)))
-dev.off()
-
-png(filename = paste0("figures/figures_MS_data/technical_validation_3_",spp[i],".png"),
-    width = 16*200, height = 10*200, res = 200)
-print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
-        geom_sf(data = eco_xx[eco_xx$type=="MEOW",], fill = "black", alpha = 0.3, color = "black") +
-        #geom_sf(data = gbif_sf_layer[gbif_sf_layer$species == spp[i],], col = "black", shape = 3, size = 4, lwd = 3) +
-        geom_sf(data = world, fill = "grey", color=NA) +  coord_sf(crs = '+proj=moll') + 
-        theme_minimal() +
-        scale_fill_gradient(low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8],
-                            trans = "log10") +
-        theme(legend.title = element_blank(),
-              legend.key.size = unit(1, 'cm'),
-              legend.key.height = unit(1, 'cm'),
-              legend.key.width = unit(1, 'cm'),
-              legend.text = element_text(size=20)))
-dev.off()
-
-
-################################################################################
-### 5. Separate "true" versus "false" presences
+### 3. Separate "true" versus "false" presences for BATHYMETRY
 ################################################################################
 spp <- sort(unique(occ$species))
 
 occ_sf_layer <- occ_sf_layer %>% 
-  mutate(type_tf = ifelse(species %in% c(spp[1:4],spp[6:7],spp[9]) & type == "MEOW", "TRUE", "FALSE"),
+  mutate(type_tf = ifelse(species %in% c(spp[1:4],spp[6:7],spp[9]) & type == "coastal", "TRUE", "FALSE"),
          type_tf = ifelse(species %in% c(spp[1],spp[3:5]) & type == "bathyal", "TRUE", type_tf),
          type_tf = ifelse(species %in% c(spp[3],spp[5],spp[8]) & type == "abyssal", "TRUE", type_tf),
-         type_tf = ifelse(species==spp[8] & type == "hadal", "TRUE", type_tf))
+         type_tf = ifelse(species==spp[8] & type == "hadal", "TRUE", type_tf),
+         type_tf_fao = ifelse(species == spp[1] & zone %in% c(18,21,27,31),
+                              "TRUE", "FALSE"),
+         type_tf_fao = ifelse(species == spp[3] & zone %in% c(18,21,27,31,34,37,41,47,51,57,58,61,71,81),
+                              "TRUE", type_tf_fao),
+         type_tf_fao = ifelse(species == spp[4] & zone %in% c(18,21,27,61,67),
+                              "TRUE", type_tf_fao),
+         type_tf_fao = ifelse(species == spp[5] & zone %in% c(21,27,31,34,41,47,48,57,58,61,67,77,81,87),
+                              "TRUE", type_tf_fao),
+         # type_tf_fao = ifelse(species == spp[6] & zone %in% c(),
+         #                      "TRUE", "FALSE"),
+         type_tf_fao = ifelse(species == spp[7] & zone %in% c(51,57,61,71,77,81),
+                              "TRUE", type_tf_fao),
+         # type_tf_fao = ifelse(species == spp[8] & zone %in% c(),
+         #                      "TRUE", "FALSE"),
+         type_tf_fao = ifelse(species == spp[9] & zone %in% c(51,57,61,71,77),
+                              "TRUE", type_tf_fao))
 
 summary_tab <- data.frame()
 
+pdf(file = "figures/appendix/true_false_bathymetry.pdf",
+    width = 14)
 for(i in 1:length(spp)){
+  if(spp[i] != "Callinectes sapidus"){
+
   spp_xx <- occ_sf_layer %>%
     st_drop_geometry() %>% 
     filter(species == spp[i]) %>% 
@@ -232,22 +181,22 @@ for(i in 1:length(spp)){
     filter(!is.na(nb))
   
   # map map
-  png(filename = paste0("figures/figure_4/true_false",spp[i],".png"),
-      width = 16*200, height = 10*200, res = 200)
   print(ggplot(eco_xx[eco_xx$type_tf == "TRUE" ,]) + geom_sf(aes(fill = prop), color = NA) +
     scale_fill_gradient(limits = c(0,100), low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8]) +
     new_scale_fill() +
     geom_sf(data = eco_xx[eco_xx$type_tf == "FALSE" ,], aes(fill = prop), color = NA) +
     scale_fill_gradient(limits = c(0,100), low= brewer.pal(9,"BuPu")[2], high = brewer.pal(9,"BuPu")[8]) +
     theme_minimal() +
-    geom_sf(data = world, fill = "grey", color=NA) +  coord_sf(crs = '+proj=moll') +
+    geom_sf(data = world, fill = "grey", color=NA) +
+    # coord_sf(crs = '+proj=moll') +
     theme(legend.title = element_blank(),
-          legend.key.size = unit(1, 'cm'),
-          legend.key.height = unit(1, 'cm'),
-          legend.key.width = unit(1, 'cm'),
-          legend.text = element_text(size=20)))
-  dev.off()
-  
+          legend.key.size = unit(0.5, 'cm'),
+          legend.key.height = unit(0.5, 'cm'),
+          legend.key.width = unit(0.5, 'cm'),
+          legend.text = element_text(size=10),
+          legend.position = "bottom") +
+    ggtitle(paste0(spp[i])))
+
   #make map with table
   spp_tab <- data.frame(variable = c("total","true","false"),
                         value = c(round(sum(spp_xx$nb)),
@@ -255,6 +204,145 @@ for(i in 1:length(spp)){
                                   round(sum(spp_xx[spp_xx$type_tf==FALSE,]$prop, na.rm=T),2)),
                         species = rep(spp[i], times = 3))
   summary_tab <- rbind(summary_tab, spp_tab)
+  }
 }
+dev.off()
 
-write.csv(summary_tab, file = "figures/figure_4/summary_tab.csv", row.names = FALSE)
+
+write.csv(summary_tab, file = "outputs/application/summary_tab.csv", row.names = FALSE)
+
+
+################################################################################
+### 4. Separate "true" versus "false" presences for FAO FISHING AREAS
+################################################################################
+
+summary_tab <- data.frame()
+pdf(file = "figures/appendix/true_false_fao.pdf",
+    width = 14)
+for(i in 1:length(spp)){
+  if(!spp[i] %in% c("Callinectes sapidus","Patiria pectinifera",
+                    "Pseudoliparis swirei")){
+    spp_xx <- occ_sf_layer %>%
+      st_drop_geometry() %>% 
+      filter(species == spp[i]) %>% 
+      group_by(ID, type_tf_fao, zone) %>% 
+      summarize(nb = length(ID)) %>% 
+      filter(!is.na(ID))
+    
+    spp_xx <- spp_xx %>% 
+      mutate(prop = nb/sum(spp_xx$nb)*100)
+    
+    eco_xx <- left_join(eco, spp_xx, by = "ID") %>% 
+      filter(!is.na(nb))
+    
+    # map map
+    print(ggplot(eco_xx[eco_xx$type_tf_fao == "TRUE",]) + geom_sf(aes(fill = prop), color = NA) +
+            scale_fill_gradient(limits = c(0,100), low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8]) +
+            new_scale_fill() +
+            geom_sf(data = eco_xx[eco_xx$type_tf_fao == "FALSE",], aes(fill = prop), color = NA) +
+            scale_fill_gradient(limits = c(0,100), low= brewer.pal(9,"BuPu")[2], high = brewer.pal(9,"BuPu")[8]) +
+            theme_minimal() +
+            geom_sf(data = world, fill = "grey", color=NA) +
+            # coord_sf(crs = '+proj=moll') +
+            theme(legend.title = element_blank(),
+                  legend.key.size = unit(0.5, 'cm'),
+                  legend.key.height = unit(0.5, 'cm'),
+                  legend.key.width = unit(0.5, 'cm'),
+                  legend.text = element_text(size=10),
+                  legend.position = "bottom") +
+            ggtitle(paste0(spp[i])))
+    
+    #make map with table
+    spp_tab <- data.frame(variable = c("total","true","false"),
+                          value = c(round(sum(spp_xx$nb)),
+                                    round(sum(spp_xx[spp_xx$type_tf_fao==TRUE,]$prop, na.rm=T),2),
+                                    round(sum(spp_xx[spp_xx$type_tf_fao==FALSE,]$prop, na.rm=T),2)),
+                          species = rep(spp[i], times = 3))
+    summary_tab <- rbind(summary_tab, spp_tab)
+  }
+}
+dev.off()
+
+write.csv(summary_tab, file = "outputs/application/summary_tab_fao.csv", row.names = FALSE)
+
+
+################################################################################
+### 5. MAPS OF BOth CRITERIA
+################################################################################
+
+summary_tab <- data.frame()
+pdf(file = "figures/appendix/true_false_both.pdf",
+    width = 14)
+for(i in 1:length(spp)){
+  if(!spp[i] %in% c("Callinectes sapidus","Patiria pectinifera",
+                    "Pseudoliparis swirei")){
+    spp_xx <- occ_sf_layer %>%
+      st_drop_geometry() %>% 
+      filter(species == spp[i]) %>% 
+      group_by(ID, type_tf_fao, type_tf,) %>% 
+      summarize(nb = length(ID)) %>% 
+      filter(!is.na(ID))
+    
+    ids <- sort(unique(spp_xx$ID))
+    spp_xx_2 <- data.frame()
+    for(j in 1:length(ids)){
+      y <- spp_xx %>% 
+        filter(ID == ids[j])
+      if(nrow(y)>1){
+        y <- y %>% 
+          mutate(type_tf_fao = "TRUE") %>% 
+          group_by(ID, type_tf_fao, type_tf) %>% 
+          summarize(nb = sum(nb))
+        if(j==1){spp_xx_2 <- y} else {spp_xx_2[nrow(spp_xx_2)+1,] <- y}
+      } else {
+        if(j==1){spp_xx_2 <- y} else {spp_xx_2[nrow(spp_xx_2)+1,] <- y}
+      }
+    }
+    
+    spp_xx_2 <- spp_xx_2 %>% 
+      mutate(prop = nb/sum(spp_xx_2$nb)*100,
+             flag = ifelse(type_tf==TRUE & type_tf_fao == TRUE, "TRUE (bathy) & TRUE (fao)", "FALSE"),
+             flag = ifelse(type_tf==FALSE & type_tf_fao == TRUE, "FALSE (bathy) & TRUE (fao)", flag),
+             flag = ifelse(type_tf==TRUE & type_tf_fao == FALSE, "TRUE (bathy) & FALSE (fao)", flag),
+             flag = ifelse(type_tf==FALSE & type_tf_fao == FALSE, "FALSE (bathy) & FALSE (fao)", flag))
+    
+    eco_xx <- left_join(eco, spp_xx_2, by = "ID") %>% 
+      filter(!is.na(nb))
+    
+    palette_tf <- c("purple","lightsteelblue2","plum3","orange")
+    names_tf <- c("FALSE (bathy) & FALSE (fao)", "FALSE (bathy) & TRUE (fao)", 
+                  "TRUE (bathy) & FALSE (fao)","TRUE (bathy) & TRUE (fao)")
+    names(palette_tf) <- names_tf
+    
+    # map
+    print(ggplot(eco_xx) + geom_sf(aes(fill = flag), color = NA) +
+            scale_fill_manual(values = palette_tf) +
+            theme_minimal() +
+            geom_sf(data = world, fill = "grey", color=NA) +
+            theme(legend.title = element_blank(),
+                  legend.key.size = unit(0.5, 'cm'),
+                  legend.key.height = unit(0.5, 'cm'),
+                  legend.key.width = unit(0.5, 'cm'),
+                  legend.text = element_text(size=10),
+                  legend.position = "bottom") +
+            ggtitle(paste0(spp[i])))
+    
+    #make map with table
+    spp_tab <- data.frame(variable = c("total",
+                                       "true (bathy) & true (fao)",
+                                       "true (bathy) & false (fao)",
+                                       "false (bathy) & true (fao)",
+                                       "false (bathy) & false (fao)"),
+                          value = c(round(sum(spp_xx_2$nb)),
+                                    round(sum(spp_xx_2[spp_xx_2$flag=="TRUE (bathy) & TRUE (fao)",]$prop, na.rm=T),2),
+                                    round(sum(spp_xx_2[spp_xx_2$flag=="TRUE (bathy) & FALSE (fao)",]$prop, na.rm=T),2),
+                                    round(sum(spp_xx_2[spp_xx_2$flag=="FALSE (bathy) & TRUE (fao)",]$prop, na.rm=T),2),
+                                    round(sum(spp_xx_2[spp_xx_2$flag=="FALSE (bathy) & FALSE (fao)",]$prop, na.rm=T),2)),
+                          species = rep(spp[i], times = 5))
+    summary_tab <- rbind(summary_tab, spp_tab)
+  }
+}
+dev.off()
+
+write.csv(summary_tab, file = "outputs/application/summary_tab_both.csv", row.names = FALSE)
+

@@ -6,3 +6,6 @@ bpow.Rproj
 
 data/*
 outputs/*
+
+.DS_Store
+**/.DS_Store
