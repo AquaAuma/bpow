@@ -1,6 +1,7 @@
 # Code and figures for "A global biogeographic regionalization of the benthic ocean"
 
 Authors: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz
+
 Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
 
 ## Methods
