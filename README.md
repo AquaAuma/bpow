@@ -7,9 +7,6 @@ Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
 ## Methods
 The methods.Rmd Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer.
 
-## Refs
-The file `bpow_refs.bib` lists important references cited in the methods.Rmd file.
-
 ## Code
 Folder with the R codes used for the analyses separated into two parts:
 1. create_layer, describing all steps to create the GIS layer performed on R
@@ -47,3 +44,6 @@ Folder with figure outputs
 ## Author contributions
 - code: Aurore A. Maureaud
 - methods: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Kevin Winner, Griffy Vigneron
+
+## Refs
+The file `bpow_refs.bib` lists important references cited in the methods.Rmd file.
