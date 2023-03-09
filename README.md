@@ -1,6 +1,6 @@
-# Code and figures for "A global biogeographic regionalization of the benthic ocean"
+# Benthic Provinces of the World
 
-Authors: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz
+This repository contains the codes and methods used to produce the shapefile layer associated with "A global biogeographic regionalization of the benthic ocean", by Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz.
 
 Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
 
@@ -43,7 +43,6 @@ Folder with figure outputs
 - outputs/hadal/ includes the temporary data from the for loop in d.
 - outputs/holes/ includes all the outputs from the HPC run from e. before f. 
 
-## Contributors
+## Author contributions
 - code: Aurore A. Maureaud
 - methods: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Kevin Winner, Griffy Vigneron
-- main contact: Aurore Maureaud, aurore.aqua@gmail.com
