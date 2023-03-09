@@ -1,6 +1,6 @@
-- outputs/arcpro/ outputs per processing
-- outputs/deep_sea/ layer files after R code a.
-- outputs/bpow/ includes the versions of the layer up to the steps detailed in methods.Rmd
-- outputs/hadal/ includes the temporary data from the for loop in d.
-- outputs/holes/ includes all the outputs from the HPC run from e. before f. 
-- outputs/application/ includes the outputs from the species application summary figures
+- **arcpro/** outputs per processing
+- **deep_sea/** layer files after R code a.
+- **bpow/** includes the versions of the layer up to the steps detailed in methods.Rmd
+- **hadal/** includes the temporary data from the for loop in d.
+- **holes/** includes all the outputs from the HPC run from e. before f. 
+- **application/** includes the outputs from the species application summary figures
