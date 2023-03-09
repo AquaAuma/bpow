@@ -1,5 +1,8 @@
 # Code and figures for "A global biogeographic regionalization of the benthic ocean"
 
+Authors: Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz
+Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
+
 ## Methods
 The methods.Rmd Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer.
 
