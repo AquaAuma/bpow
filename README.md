@@ -5,20 +5,13 @@ This repository contains the codes and methods used to produce the shapefile lay
 Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
 
 ## Methods
-The methods.Rmd Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer.
+The **methods.Rmd** Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer.
 
 ## Structure of the repository
-- code
-- figures
-- outputs
-- data
-
-## Data
-- data/gbif_spp/ GBIF download for select species to conduct the technical validation, August 2022 https://www.gbif.org
-- data/obis_spp/ OBIS download for select species to conduct the technical validation, August 2022 https://obis.org
-- data/gebco_2020_ascii/ GEBCO downloaded from https://www.gebco.net
-- data/meows_ecos/ MEOWs downloaded from https://www.marineregions.org/, data linked to Spalding et al. (2007)
-- data/goods_provinces/ access given by Les Watling, data linked to Watling et al. (2013)
+- **code** includes all R scripts used to create the layer, and summarized in **methods.Rmd**
+- **figures** includes all outputs figures produced for the manuscripts
+- **outputs** includes the results from the application analysis
+- **data** includes the data (but may not be uploaded depending on file size)
 
 ## Author contributions
 - code: Aurore A. Maureaud
