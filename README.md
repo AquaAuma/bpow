@@ -4,6 +4,8 @@ This repository contains the codes and methods used to produce the shapefile lay
 
 Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
 
+<img src ="https://github.com/AquaAuma/bpow/blob/main/Picture1.png" width ="200">
+
 ## Methods
 The `methods.Rmd` Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer. Methods are summarized in the file because both R v4.0.3 and ArcPro 2.8.3 softwares were used, and this document gives an overall overview of the methods and steps involved. This document is also summarized in Figure 1. 
 
