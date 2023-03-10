@@ -4,7 +4,12 @@
 .Ruserdata
 bpow.Rproj
 
-data/*
+data/gbif_spp/*
+data/obis_spp/*
+data/meows_ecos/*
+data/gebco_2020_ascii/*
+data/MOL_Land_Layer_Countries_Fixed/*
+data/goods_provinces/*
 outputs/arcpro/*
 outputs/bpow/*
 outputs/deep_sea/*
