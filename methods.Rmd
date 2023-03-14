@@ -1,7 +1,7 @@
 ---
-title: "methods bpow"
-author: "Aurore A. Maureaud"
-date: '2022'
+title: "Appendix 1. Methods file describing all data processing steps to create the GIS layer."
+author: "Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessica G. Vigneron, Les Watling, Kevin Winner, Walter Jetz. In review. A global biogeographic regionalization of the benthic ocean. Journal of Biogeography.
+date: '2023'
 output:
   pdf_document: default
   word_document: default
@@ -17,19 +17,19 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 ```
 
-*Brief description:* This document presents the combination of steps performed either on R, or on the geospatial software (ArcGIS, but reproducible on the open source QGIS) to create the biogeographic layer of the benthic provinces of the world (bpow).
+*Brief description:* This document presents the combination of steps performed either on R v4.0.3 (R Core Team 2021), or on the geospatial software (ArcPro v2.8.3, but reproducible on the open source QGIS) to create the biogeographic layer of the Benthic Provinces of the World (BPOW).
 
 # Data
 
--   Marine Ecoregions of the World: 232 ecoregions, 62 provinces, and 12 realms, [Spalding et al., 2007](https://doi.org/10.1641/B570707) [@spalding_marine_2007]
--   Deep sea GOODS provinces: 14 bathyal and 14 abyssal provinces [Watling et al., 2013](https://doi.org/10.1016/j.pocean.2012.11.003) [@watling_proposed_2013]
+-   MEOW: Marine Ecoregions of the World: 232 ecoregions, 62 provinces, and 12 realms [Spalding et al. 2007](https://doi.org/10.1641/B570707) [@spalding_marine_2007]
+-   DSP: Deep sea GOODS provinces: 14 bathyal and 14 abyssal provinces [Watling et al. 2013](https://doi.org/10.1016/j.pocean.2012.11.003) [@watling_proposed_2013]
 -   Hadal provinces [Belyaev, 1989](https://escholarship.org/uc/item/46n6148x) [@belyaev_deep_1989]
 -   Global depth raster from [GEBCO](https://www.gebco.net/) [@gebco_bathymetric_compilation_group_gebco_2020_2020]
 -   Land polygons with major islands from [Natural Earth](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/) at 10m resolution, version 4.1.0
 
 # Analysis steps
 
-## Part 1: check validity of DSP geometries
+## Part I: Geometry checks (DSP layer)
 
 *Performed on ArcGIS Pro*
 
@@ -41,7 +41,7 @@ library(here)
 
     ![](figures/methods/self_intersection_4.png){width="539"}
 
-## Part 2: correcting geometries for the DSP shapefile layers
+## Part II: Geometry correction in the DSP shapefile layers
 
 *Performed on R*
 
@@ -54,7 +54,7 @@ library(here)
 ```{r code a., code = readLines(here("./code/create_layer/a.fix_deep_sea_layers.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 3: Removing irregularities from the bathyal shapefile
+## Part III: Fix boundary (removing irregularities from the bathyal shapefile)
 
 *Performed on R*
 
@@ -73,7 +73,7 @@ library(here)
 ```{r code b., code = readLines(here("./code/create_layer/b.remove_irregularities.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 4: Merging the bathyal and abyssal shapefile layers
+## Part IV: Creating complementary bathyal and abyssal layers
 
 *Performed on ArcGIS Pro*
 
@@ -99,7 +99,7 @@ library(here)
 
     ![](figures/methods/self_intersection_5.png)
 
-## Part 5: Merging the coastal and deep sea shapefile layers
+## Part V: Deep-sea clip
 
 *Performed on ArcGIS Pro*
 
@@ -126,7 +126,7 @@ library(here)
 ```{r code c., code = readLines(here("./code/create_layer/c.layer_post-processing_1.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 6: Identify remaining areas
+## Part VI: Indentification of uncharacterized sites
 
 *Performed on ArcGIS Pro*
 
@@ -150,7 +150,7 @@ library(here)
     | `-ArcGIS: Pairwise erase, input = extent, erase = Provinces_P5S2_PairwiseErase, output = holes_p6s2` |
     +------------------------------------------------------------------------------------------------------+
 
-## Part 7: Remove hadal and classify provinces
+## Part VII: Isolation and classification of hadal trenches
 
 *Performed on R*
 
@@ -165,7 +165,7 @@ library(here)
 ```{r code d., code = readLines(here("./code/create_layer/d.remove_hadal_from_meows.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 8: Characterize missing regions
+## Part VIII: Assigning biogeographic regions to unclassified polygons
 
 *Performed on R*
 
@@ -187,7 +187,7 @@ library(here)
 ```{r code f., code = readLines(here("./code/create_layer/f.full_areas.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 9: Quality checks
+## Part IX: Quality checks
 
 *Performed on ArcGIS Pro*
 
@@ -213,7 +213,7 @@ library(here)
 
 +=======================================================================+ +-----------------------------------------------------------------------+
 
-## Part 10: Remove land
+## Part X: Clipping to global landmasses
 
 *Performed on ArcGIS Pro*
 
