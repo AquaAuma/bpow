@@ -1,13 +1,13 @@
 ---
 title: "Appendix 1. Methods file describing all data processing steps to create the GIS layer."
-author: "Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessica G. Vigneron, Les Watling, Kevin Winner, Walter Jetz. In review. A global biogeographic regionalization of the benthic ocean. Journal of Biogeography.
+author: "A. Maureaud, G. Reygondeau, K. Ingenloff, J.G. Vigneron, L. Watling, K. Winner, W. Jetz"
 date: '2023'
 output:
-  pdf_document: default
-  word_document: default
   html_document: 
     toc: true
     theme: flatly
+  word_document: default
+  pdf_document: default
 bibliography: bpow_refs.bib
 link-citations: yes
 ---
@@ -29,76 +29,46 @@ library(here)
 
 # Analysis steps
 
-## Part I: Geometry checks (DSP layer)
+## Part I: Geometry checks (DSP layer) on ArcPro
 
 *Performed in ArcPro v2.8.3*
 
-<<<<<<< HEAD
--   Step #1: Both the bathyal and abyssal layers were checked because we noticed some wrong geometries in it when trying to perform geometric operations on Arc/QGIS. A lot of points were identified with wrong geometries because of self-intersections.
+-   Step #1: We checked both the bathyal and abyssal layers for errors as we noticed invalid geometries when trying to perform geometric operations in ArcPro/QGIS. Specifically, numerous points were flagged as having self-intersections.
 
     [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/methods/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/methods/self_intersection_2.png) ![](figures/methods/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
 
--   Step #2: The validity of geometries was checked with the command "Check validity" of QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
-=======
--   Step \#1: We checked both the bathyal and abyssal layers for errors as we noticed invalid geometries when trying to perform geometric operations in ArcPro/QGIS. Specifically, numerous points were flagged as having self-intersections.
-
-    [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/methods/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/methods/self_intersection_2.png) ![](figures/methods/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
-
--   Step \#2: We evaluated the validity of geometries using "Check validity" in QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #2: We evaluated the validity of geometries using "Check validity" in QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
 
     ![](figures/methods/self_intersection_4.png){width="539"}
 
-## Part II: Geometry correction in the DSP shapefile layers
+## Part II: Geometry checks (DSP layer) on R
 
 *Performed in R v4.0.3*
 
-<<<<<<< HEAD
--   Step #1: check validity of geometries on R with the sf function `st_is_valid()`to check what geometric problem is occurring. All issues are due to self-intersections on both objects
+-   Step #1: We used the function `sf::st_is_valid()` to checked the validity of geometries in each layer. All issues were due to self-intersections in both objects.
 
--   Step #2: correct the geometric issues in both layers with the sf R function `st_make_valid()`
+-   Step #2: We used the function `sf::st_make_valid()` to correct identified self-intersections in each file.
 
--   Step #3: files saved with the function with the sf R function `st_write()`
-=======
--   Step \#1: We used the function `sf::st_is_valid()` to checked the validity of geometries in each layer. All issues were due to self-intersections in both objects.
-
--   Step \#2: We used the function `sf::st_make_valid()` to correct identified self-intersections in each file. 
-
--   Step \#3: Files were saved using the function `sf::st_write()`.
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #3: Files were saved using the function `sf::st_write()`.
 
 ```{r code a., code = readLines(here("./code/create_layer/a.fix_deep_sea_layers.R")), class.source="small", eval = FALSE}
 ```
 
-## Part III: Fix boundary issues (removal of irregularities from the bathyal shapefile)
+## Part III: Fix boundary
 
 *Performed in R v4.0.3*
 
-<<<<<<< HEAD
--   Step #1: identification of areas: off the Florida coast, because the threshold of 800m is arbitrary and this is a "transition" zone
+-   Step #1: We identified areas off the coast of Florida, USA with spatial irregularities resulting from the fact that the 800m threshold is arbitrary and this is a "transition" zone.
 
     ![](figures/methods/irregularities.png){width="408"}
 
--   Step #2: fixed on R, using GEBCO and adding additional areas to the bathyal layer
+-   Step #2: We addressed the irregularites in R using GEBCO and adding additional areas to the bathyal layer.
 
--   Step #3: all polygons intersecting the depth raster (in blue below) are merged via `st_union()` to create one larger replacing polygons, added to the bathyal layer
-
-    ![](figures/methods/irregularities_3.png){width="293"}
-
--   Step #4: geometry checked again and file saved with the function with the sf R function`st_write()`
-=======
--   Step \#1: We identified areas off the coast of Florida, USA with spatial irregularities resulting from the fact that the 800m threshold is arbitrary and this is a "transition" zone.
-
-    ![](figures/methods/irregularities.png){width="408"}
-
--   Step \#2: We addressed the irregularites in R using GEBCO and adding additional areas to the bathyal layer.
-
--   Step \#3: All polygons intersecting the depth raster (in blue below) were merged using `sf::st_union()` to create a single larger replacing polygons, added to the bathyal layer.
+-   Step #3: All polygons intersecting the depth raster (in blue below) were merged using `sf::st_union()` to create a single larger replacing polygons, added to the bathyal layer.
 
     ![](figures/methods/irregularities_3.png){width="293"}
 
--   Step \#4: We again checked geometry validity to ensure no errors (e.g., self-intersections) remained and saved the file using `sf::st_write()`.
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #4: We again checked geometry validity to ensure no errors (e.g., self-intersections) remained and saved the file using `sf::st_write()`.
 
 ```{r code b., code = readLines(here("./code/create_layer/b.remove_irregularities.R")), class.source="small", eval = FALSE}
 ```
@@ -107,41 +77,23 @@ library(here)
 
 *Performed in ArcPro v2.8.3*
 
-<<<<<<< HEAD
--   Step #1: Check that the layers are perfectly complementary to each other by manual visualization, and they are not
+-   Step #1: We assessed whether or not the bathyal and abyssal layers are perfectly complementary to each other by manual visualization. They were not.
 
     ![](figures/methods/complementarity_1.png) ![](figures/methods/complementarity_2.png) ![](figures/methods/complementarity_3.png)
 
--   Step #2: Creating perfectly complementary abyssal and bathyal layers, by taking the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats will be associated with the bathyal layer, because they may represent more potential habitat than abyssal areas.
-=======
--   Step \#1: We assessed whether or not the bathyal and abyssal layers are perfectly complementary to each other by manual visualization. They were not.
-
-    ![](figures/methods/complementarity_1.png) ![](figures/methods/complementarity_2.png) ![](figures/methods/complementarity_3.png)
-
--   Step \#2: To create perfectly complementary abyssal and bathyal layers we took the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats were associated with the bathyal layer because they may represent more potential habitat than abyssal areas.
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #2: To create perfectly complementary abyssal and bathyal layers we took the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats were associated with the bathyal layer because they may represent more potential habitat than abyssal areas.
 
     Operation: geometric difference between the bathyal layer and the abyssal layer
 
-    `QGIS: Vector → Geoprocessing tools → Difference → Input Layer: bathyal, Overlay Layer: abyssal`
+    `ArcGIS: Geoprocessing → Pairwise Erase, input = abyssal, erase = bathyal, output = p4s2`
 
--   `ArcGIS: Geoprocessing → Pairwise Erase, input = abyssal, erase = bathyal, output = p4s2`
-
-<<<<<<< HEAD
--   Step #3: Creating one shapefile with the abyssal and bathyal layers which I will then call the deepsea layer.
-=======
--   Step \#3: We created a single, merged shapefile (the deepsea layer) that included the newly complementary abyssal and bathyal layers.
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #3: We created a single, merged shapefile (the deepsea layer) that included the newly complementary abyssal and bathyal layers.
 
     Operation: merging of the two complementary shapefiles into a single deep sea shapefile
 
-    `QGIS: Vector → Data Management Tools → Merge layers → Input Layers: ABYSSAL + BATHYAL` `ArcGIS: Merge, input = p4s2, input = GOODSprovinces_bathyal_irregularities, output = GOODSprovinces_p4s3`
+    `ArcGIS: Merge, input = p4s2, input = GOODSprovinces_bathyal_irregularities, output = GOODSprovinces_p4s3`
 
-<<<<<<< HEAD
--   Step #4: Correcting invalid geometry manually
-=======
--   Step \#4: Manual correction of invalid geometries
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+-   Step #4: Manual correction of invalid geometries
 
     ![](figures/methods/self_intersection_5.png)
 
@@ -157,11 +109,9 @@ library(here)
 
     ![](figures/methods/merge_2.png)
 
-    `QGIS: Vector → Geoprocessing Tools → Difference → Input Layer: MEOW, Overlay Layer: DEEPSEA` `ArcGIS: Geoprocessing → Pairwise Erase, input = meows_ecos, erase = GOODSprovinces_p4s3, output = provinces_p5s1`
+    `ArcGIS: Geoprocessing → Pairwise Erase, input = meows_ecos, erase = GOODSprovinces_p4s3, output = provinces_p5s1`
 
--   Step #2: Creating a shapefile for joining the layers MEOW and DEEPSEA that after step#1 should be perfectly complementary (no spatial overlap) that I will then call the SEAFLOOR shapefile layer.
-
-    `QGIS: Vector → Data Management Tools → Merge Vector Layers → Input Layers: MEOWS-DEEPSEA, DEEPSEA`
+-   Step #2: Creating a shapefile for joining the layers MEOW and DEEPSEA that after Step #1 should be perfectly complementary (no spatial overlap) that I will then call the SEAFLOOR shapefile layer.
 
     `ArcGIS: Geoprocessing → Merge, input = provinces_p5s1, input = GOODSprovinces_p4s3, output = provinces_p5s2`
 
@@ -182,19 +132,15 @@ library(here)
 
 -   Step #2: get a shapefile with all missing polygons: (merge of seafloor shapefile with a low resolution land layer (does not matter since meows have a bunch of land areas already)
 
-    +---------------------------------------------------------------------------------------------------------------+
-    | `-ArcGIS: Pairwise erase, input = ne_10m_land, erase = Provinces_P5S2, output = Provinces_P5S2_PairwiseErase` |
-    |                                                                                                               |
-    | `-ArcGIS: Merge, input = Provinces_P5S2_PairwiseErase, input = Provinces_P5S2, output = Provinces_P5S2_merge` |
-    +---------------------------------------------------------------------------------------------------------------+
+    `-ArcGIS: Pairwise erase, input = ne_10m_land, erase = Provinces_P5S2, output = Provinces_P5S2_PairwiseErase`
+
+    `-ArcGIS: Merge, input = Provinces_P5S2_PairwiseErase, input = Provinces_P5S2, output = Provinces_P5S2_merge`
 
 -   Step #3: get polygons that are uncharacterized
 
-    +------------------------------------------------------------------------------------------------------+
-    | `-ArcGIS: Create feature, extent of -180;180;-90,90`                                                 |
-    |                                                                                                      |
-    | `-ArcGIS: Pairwise erase, input = extent, erase = Provinces_P5S2_PairwiseErase, output = holes_p6s2` |
-    +------------------------------------------------------------------------------------------------------+
+    `-ArcGIS: Create feature, extent of -180;180;-90,90`
+
+    `-ArcGIS: Pairwise erase, input = extent, erase = Provinces_P5S2_PairwiseErase, output = holes_p6s2`
 
 ## Part VII: Isolation and classification of hadal trenches
 
@@ -239,35 +185,20 @@ library(here)
 
 -   Step #1: Remove unnecessary parts of the geometry
 
-|                                                        |
-|--------------------------------------------------------|
-| `-ArcGIS: Pariwise Dissolve, input = bpow_s8p5, by=ID` |
-| `-QGIS: Dissolve`                                      |
+    `-ArcGIS: Pariwise Dissolve, input = bpow_s8p5, by=ID`
 
 ```{r code h., code = readLines(here("./code/create_layer/h.fix_geometry_prior_clipp.R")), class.source="small", eval = FALSE}
 ```
 
 -   Step #2: Fix the boundaries of the layer
 
-|            |
-|------------|
-| `-ArcGIS:` |
-
-<<<<<<< HEAD
-## Part 10: Remove land
-=======
-
-+=======================================================================+ +-----------------------------------------------------------------------+
+    `-ArcGIS:`
 
 ## Part X: Clipping to global landmasses
->>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
 *Performed in ArcPro v2.8.3*
 
-|                                                             |
-|-------------------------------------------------------------|
-| `-ArcGIS: Pairwise Erase, input = land, erase = bpow_s9`    |
-| `-QGIS: Difference with ne_10land layer from natural earth` |
+`-ArcGIS: Pairwise Erase, input = land, erase = bpow_s9`
 
 ```{r code i., code = readLines(here("./code/create_layer/i.add_attributes.R")), class.source="small", eval = FALSE}
 ```
