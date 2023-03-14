@@ -4,42 +4,25 @@ rm(list = ls())
 library(sf)
 library(tidyverse)
 library(ggplot2)
-library(raster)
-library(exactextractr)
-library(rgdal)
-library(fasterize)
-sf::sf_use_s2(FALSE)
-library(units)
 library(ggtern)
+library(raster)
+library(rgdal)
+sf::sf_use_s2(FALSE)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(tricolore)
-library(ggtern)
 world <- ne_countries(scale = "medium", returnclass = "sf")
 library(tiff)
 library(RColorBrewer)
-library(egg)
-library(viridis)
-library(ggmap)
-library(gridExtra)
-
 
 # load layer
-eco <- st_read("outputs/bpow_p10_attributes.shp")
+eco <- st_read("outputs/bpow_p10_attributes_clip2.shp")
 st_crs(eco) <- st_crs(world)
-eco <- st_transform(eco, crs = st_crs(world))
-st_bbox(eco)[3] <- 180
+
 
 ################################################################################
-#### Make Figure 1
+#### Make Figure 3
 ################################################################################
-map_types <- ggplot(eco[eco$type == "hadal",]) + geom_sf(fill = "black", color = NA) +
-  geom_sf(data = eco[eco$type!="hadal",], aes(fill = type), color = NA) + theme_minimal() +
-  geom_sf(data = world, fill = "white", color=NA) +
-  coord_sf(crs = '+proj=moll') + 
-  scale_fill_manual(values = c(brewer.pal(9,"Blues")[9],brewer.pal(9, "YlGnBu")[c(6,4)]), 
-                    labels = c("Abyssal","Bathyal","Coastal")) +
-  labs(fill = "") + theme(legend.position = "none")
 
 # map for abyssal
 col_aby <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="abyssal",]$prov_n))
@@ -48,7 +31,6 @@ map_abyssal <- ggplot() +
   geom_sf(data = eco[eco$type!="abyssal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco_abyssal, aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color = NA, fill = "white") +
-  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_aby)) +
   labs(fill = "") + theme(legend.position = "none")
 
@@ -58,7 +40,6 @@ map_bathyal <- ggplot() +
   geom_sf(data = eco[eco$type!="bathyal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco[eco$type == "bathyal",],aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color = NA, fill = "white") +
-  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_bat)) +
   labs(fill = "") + theme(legend.position = "none")
 
@@ -68,7 +49,6 @@ map_coastal <- ggplot() +
   geom_sf(data = eco[eco$type != "coastal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco[eco$type == "coastal",],aes(fill = prov_n), color = NA) + theme_minimal() +
   geom_sf(data = world, color=NA, fill = "white") +
-  #coord_sf(crs = '+proj=moll') +
   scale_fill_manual(values = sample(col_coast)) +
   labs(fill = "") + theme(legend.position = "none")
 
@@ -79,7 +59,6 @@ map_had <- ggplot() +
   geom_sf(data = eco[eco$type == "hadal",], aes(fill = prov_n), color = NA) + 
   geom_sf(data = eco[eco$type!="hadal",], fill = "lightgrey", color = NA) +
   geom_sf(data = world, color=NA, fill = "white") +
-  #coord_sf(crs = '+proj=moll') +
   theme_minimal() +
   scale_fill_manual(values = sample(col_had)) +
   labs(fill = "") + theme(legend.position = "none") 
@@ -103,11 +82,6 @@ dev.off()
 png(filename = "figures/figure_3/figure3_hadal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_had)
-dev.off()
-
-png(filename = "figures/figure_3/figure3_types.png",
-    width = 16*200, height = 10*200, res = 200)
-print(map_types)
 dev.off()
 
 
