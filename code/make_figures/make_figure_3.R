@@ -26,7 +26,9 @@ library(gridExtra)
 
 # load layer
 eco <- st_read("outputs/bpow_p10_attributes.shp")
-
+st_crs(eco) <- st_crs(world)
+eco <- st_transform(eco, crs = st_crs(world))
+st_bbox(eco)[3] <- 180
 
 ################################################################################
 #### Make Figure 1
@@ -34,7 +36,7 @@ eco <- st_read("outputs/bpow_p10_attributes.shp")
 map_types <- ggplot(eco[eco$type == "hadal",]) + geom_sf(fill = "black", color = NA) +
   geom_sf(data = eco[eco$type!="hadal",], aes(fill = type), color = NA) + theme_minimal() +
   geom_sf(data = world, fill = "white", color=NA) +
-  #coord_sf(crs = '+proj=moll') + 
+  coord_sf(crs = '+proj=moll') + 
   scale_fill_manual(values = c(brewer.pal(9,"Blues")[9],brewer.pal(9, "YlGnBu")[c(6,4)]), 
                     labels = c("Abyssal","Bathyal","Coastal")) +
   labs(fill = "") + theme(legend.position = "none")

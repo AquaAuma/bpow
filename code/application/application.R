@@ -1,7 +1,7 @@
 ################################################################################
 #### Coding and data processing: Aurore Maureaud
 #### Technical validation of the layer product
-#### January 2023
+#### March 2023
 ################################################################################
 rm(list = ls())
 
@@ -30,6 +30,7 @@ library(ggnewscale)
 library(ggpmisc)
 library(gridExtra) 
 library(ggeffects)
+library(robis)
 
 
 ################################################################################
@@ -40,13 +41,13 @@ library(ggeffects)
 eco <- st_read("outputs/bpow_p10_attributes.shp")
 
 # load species data
-spp <- c("Actinostola callosa","Pseudoliparis swirei","Callinectes sapidus","Centroscymnus coelolepis",
-         "Chionoecetes opilio","Coryphaenoides armatus","Patiria pectinifera","Plesiobatis daviesi",
-         "Tridacna gigas")
+spp <- c("Actinostola callosa","Pseudoliparis swirei","Centroscymnus coelolepis",
+         "Chionoecetes opilio","Patiria pectinifera","Plesiobatis daviesi",
+         "Tridacna gigas", "Psychropotes depressa")
 
 # load GBIF
 gbif <- fread(
-  file.path("data/gbif_spp/occurrence.txt"),
+  file.path("data/gbif_spp/0081481-230224095556074/occurrence.txt"),
   na.strings = c("", NA),
   quote = "",
   select = c(
@@ -74,32 +75,81 @@ gbif <- fread(
   mutate(source = "GBIF")
 
 # load OBIS
-obis <- read_csv("data/obis_spp/Occurrence.csv") %>% 
-  dplyr::select(
-    "decimallatitude",
-    "decimallongitude",
-    "coordinateuncertaintyinmeters",
-    "year",
-    "month",
-    "day",
-    "maximumdepthinmeters",
-    "minimumdepthinmeters",
-    "genus",
-    "species",
-    "specificepithet",
-    "infraspecificepithet",
-    "occurrencestatus") %>% 
-  filter(!is.na(decimallatitude),
-         !is.na(decimallongitude),
-         occurrencestatus %in% c("present","Present","P","Presente")) %>% 
-  distinct() %>% 
-  rename(latitude = decimallatitude,
-         longitude = decimallongitude,
-         coord_error = coordinateuncertaintyinmeters,
-         depth = maximumdepthinmeters) %>% 
-  dplyr::select(year, month, day, latitude, longitude, coord_error,
-         species, depth) %>% 
-  mutate(source = "OBIS")
+# obis <- read_csv("data/obis_spp/Occurrence.csv") %>%
+#   dplyr::select(
+#     "decimallatitude",
+#     "decimallongitude",
+#     "coordinateuncertaintyinmeters",
+#     "year",
+#     "month",
+#     "day",
+#     "maximumdepthinmeters",
+#     "minimumdepthinmeters",
+#     "genus",
+#     "species",
+#     "specificepithet",
+#     "infraspecificepithet",
+#     "occurrencestatus") %>%
+#   filter(!is.na(decimallatitude),
+#          !is.na(decimallongitude),
+#          occurrencestatus %in% c("present","Present","P","Presente")) %>%
+#   distinct() %>%
+#   rename(latitude = decimallatitude,
+#          longitude = decimallongitude,
+#          coord_error = coordinateuncertaintyinmeters,
+#          depth = maximumdepthinmeters) %>%
+#   dplyr::select(year, month, day, latitude, longitude, coord_error,
+#          species, depth) %>%
+#   mutate(source = "OBIS")
+
+
+sppdat <- data.frame(matrix(ncol = 21, nrow = 0))
+names(sppdat) <- c('date_year','scientificName','decimalLatitude','identificationQualifier',
+                   'decimalLongitude','maximumDepthInMeters','eventDate',
+                   'coordinateUncertaintyInMeters','marine','minimumDepthInMeters',
+                   'datasetID','flags','depth','shoredistance','datasetName','habitat','geodeticDatum','dataset_id','country',
+                   'month', 'day')
+sppdat <- sppdat[,order(names(sppdat))]
+
+for (i in 1:length(spp)){
+
+    sppoc <- occurrence(scientificname = spp[i])
+    if(nrow(sppoc)>0){
+      sppoc <- sppoc %>%
+        dplyr::select(one_of('date_year','scientificName','decimalLatitude','decimalLongitude','identificationQualifier',
+                      'maximumDepthInMeters','eventDate','coordinateUncertaintyInMeters','marine','minimumDepthInMeters',
+                      'datasetID','flags','depth','shoredistance','datasetName','habitat','geodeticDatum','dataset_id','country',
+                      "day","month")) %>%
+        mutate(scientificName = spp[i])
+      missing <- setdiff(names(sppdat), names(sppoc))
+
+      if(length(missing)>0){
+        sppoc <- cbind(sppoc, matrix(ncol=length(missing), nrow=nrow(sppoc)))
+        names(sppoc)[(ncol(sppdat)+1-length(missing)):ncol(sppdat)] <- missing
+        sppoc <- sppoc[,order(names(sppoc))]
+        sppdat <- rbind(sppdat, sppoc)
+      }
+      if(length(missing)==0){
+        sppoc <- sppoc[,order(names(sppoc))]
+        sppdat <- rbind(sppdat, sppoc)
+      }
+    }
+    rm(sppoc)
+}
+
+sppdat <- sppdat %>%
+  rename(year = date_year,
+         latitude = decimalLatitude,
+         longitude = decimalLongitude,
+         coord_error = coordinateUncertaintyInMeters,
+         species = scientificName
+         ) %>%
+  mutate(source = "OBIS") %>%
+  distinct() %>%
+  dplyr::select(names(gbif))
+
+write.csv(sppdat, 'data/obis_spp/application_obis_March14.csv', row.names = F)
+
 
 # merge and deduplicate
 occ <- rbind(obis, gbif) %>% 
@@ -139,9 +189,9 @@ occ_sf_eco <- occ_sf_layer %>%
 spp <- sort(unique(occ$species))
 
 occ_sf_layer <- occ_sf_layer %>% 
-  mutate(type_tf = ifelse(species %in% c(spp[1:4],spp[6:7],spp[9]) & type == "coastal", "TRUE", "FALSE"),
-         type_tf = ifelse(species %in% c(spp[1],spp[3:5]) & type == "bathyal", "TRUE", type_tf),
-         type_tf = ifelse(species %in% c(spp[3],spp[5],spp[8]) & type == "abyssal", "TRUE", type_tf),
+  mutate(type_tf = ifelse(species %in% c(spp[1:4],spp[6:7],spp[10]) & type == "coastal", "TRUE", "FALSE"),
+         type_tf = ifelse(species %in% c(spp[1],spp[3:5],spp[9]) & type == "bathyal", "TRUE", type_tf),
+         type_tf = ifelse(species %in% c(spp[3],spp[5],spp[8:9]) & type == "abyssal", "TRUE", type_tf),
          type_tf = ifelse(species==spp[8] & type == "hadal", "TRUE", type_tf),
          type_tf_fao = ifelse(species == spp[1] & zone %in% c(18,21,27,31),
                               "TRUE", "FALSE"),
@@ -157,7 +207,9 @@ occ_sf_layer <- occ_sf_layer %>%
                               "TRUE", type_tf_fao),
          # type_tf_fao = ifelse(species == spp[8] & zone %in% c(),
          #                      "TRUE", "FALSE"),
-         type_tf_fao = ifelse(species == spp[9] & zone %in% c(51,57,61,71,77),
+         type_tf_fao = ifelse(species == spp[9] & zone %in% c(31),
+                              "TRUE", type_tf_fao),
+         type_tf_fao = ifelse(species == spp[10] & zone %in% c(51,57,61,71,77),
                               "TRUE", type_tf_fao))
 
 summary_tab <- data.frame()
