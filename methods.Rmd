@@ -1,7 +1,7 @@
 ---
-title: "methods bpow"
-author: "Aurore A. Maureaud"
-date: '2022'
+title: "Appendix 1. Methods file describing all data processing steps to create the GIS layer."
+author: "Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessica G. Vigneron, Les Watling, Kevin Winner, Walter Jetz. In review. A global biogeographic regionalization of the benthic ocean. Journal of Biogeography.
+date: '2023'
 output:
   pdf_document: default
   word_document: default
@@ -17,47 +17,64 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 ```
 
-*Brief description:* This document presents the combination of steps performed either on R, or on the geospatial software (ArcGIS, but reproducible on the open source QGIS) to create the biogeographic layer of the benthic provinces of the world (bpow).
+*Brief description:* This document presents the combination of steps performed either on R v4.0.3 (R Core Team 2021), or on the geospatial software (ArcPro v2.8.3, but reproducible on the open source QGIS) to create the biogeographic layer of the Benthic Provinces of the World (BPOW).
 
 # Data
 
--   Marine Ecoregions of the World: 232 ecoregions, 62 provinces, and 12 realms, [Spalding et al., 2007](https://doi.org/10.1641/B570707) [@spalding_marine_2007]
--   Deep sea GOODS provinces: 14 bathyal and 14 abyssal provinces [Watling et al., 2013](https://doi.org/10.1016/j.pocean.2012.11.003) [@watling_proposed_2013]
+-   MEOW: Marine Ecoregions of the World: 232 ecoregions, 62 provinces, and 12 realms [Spalding et al. 2007](https://doi.org/10.1641/B570707) [@spalding_marine_2007]
+-   DSP: Deep sea GOODS provinces: 14 bathyal and 14 abyssal provinces [Watling et al. 2013](https://doi.org/10.1016/j.pocean.2012.11.003) [@watling_proposed_2013]
 -   Hadal provinces [Belyaev, 1989](https://escholarship.org/uc/item/46n6148x) [@belyaev_deep_1989]
 -   Global depth raster from [GEBCO](https://www.gebco.net/) [@gebco_bathymetric_compilation_group_gebco_2020_2020]
 -   Land polygons with major islands from [Natural Earth](https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/) at 10m resolution, version 4.1.0
 
 # Analysis steps
 
-## Part 1: check validity of DSP geometries
+## Part I: Geometry checks (DSP layer)
 
-*Performed on ArcGIS Pro*
+*Performed in ArcPro v2.8.3*
 
+<<<<<<< HEAD
 -   Step #1: Both the bathyal and abyssal layers were checked because we noticed some wrong geometries in it when trying to perform geometric operations on Arc/QGIS. A lot of points were identified with wrong geometries because of self-intersections.
 
     [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/methods/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/methods/self_intersection_2.png) ![](figures/methods/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
 
 -   Step #2: The validity of geometries was checked with the command "Check validity" of QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
+=======
+-   Step \#1: We checked both the bathyal and abyssal layers for errors as we noticed invalid geometries when trying to perform geometric operations in ArcPro/QGIS. Specifically, numerous points were flagged as having self-intersections.
+
+    [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/methods/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/methods/self_intersection_2.png) ![](figures/methods/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
+
+-   Step \#2: We evaluated the validity of geometries using "Check validity" in QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
     ![](figures/methods/self_intersection_4.png){width="539"}
 
-## Part 2: correcting geometries for the DSP shapefile layers
+## Part II: Geometry correction in the DSP shapefile layers
 
-*Performed on R*
+*Performed in R v4.0.3*
 
+<<<<<<< HEAD
 -   Step #1: check validity of geometries on R with the sf function `st_is_valid()`to check what geometric problem is occurring. All issues are due to self-intersections on both objects
 
 -   Step #2: correct the geometric issues in both layers with the sf R function `st_make_valid()`
 
 -   Step #3: files saved with the function with the sf R function `st_write()`
+=======
+-   Step \#1: We used the function `sf::st_is_valid()` to checked the validity of geometries in each layer. All issues were due to self-intersections in both objects.
+
+-   Step \#2: We used the function `sf::st_make_valid()` to correct identified self-intersections in each file. 
+
+-   Step \#3: Files were saved using the function `sf::st_write()`.
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
 ```{r code a., code = readLines(here("./code/create_layer/a.fix_deep_sea_layers.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 3: Removing irregularities from the bathyal shapefile
+## Part III: Fix boundary issues (removal of irregularities from the bathyal shapefile)
 
-*Performed on R*
+*Performed in R v4.0.3*
 
+<<<<<<< HEAD
 -   Step #1: identification of areas: off the Florida coast, because the threshold of 800m is arbitrary and this is a "transition" zone
 
     ![](figures/methods/irregularities.png){width="408"}
@@ -69,19 +86,40 @@ library(here)
     ![](figures/methods/irregularities_3.png){width="293"}
 
 -   Step #4: geometry checked again and file saved with the function with the sf R function`st_write()`
+=======
+-   Step \#1: We identified areas off the coast of Florida, USA with spatial irregularities resulting from the fact that the 800m threshold is arbitrary and this is a "transition" zone.
+
+    ![](figures/methods/irregularities.png){width="408"}
+
+-   Step \#2: We addressed the irregularites in R using GEBCO and adding additional areas to the bathyal layer.
+
+-   Step \#3: All polygons intersecting the depth raster (in blue below) were merged using `sf::st_union()` to create a single larger replacing polygons, added to the bathyal layer.
+
+    ![](figures/methods/irregularities_3.png){width="293"}
+
+-   Step \#4: We again checked geometry validity to ensure no errors (e.g., self-intersections) remained and saved the file using `sf::st_write()`.
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
 ```{r code b., code = readLines(here("./code/create_layer/b.remove_irregularities.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 4: Merging the bathyal and abyssal shapefile layers
+## Part IV: Creating complementary bathyal and abyssal layers
 
-*Performed on ArcGIS Pro*
+*Performed in ArcPro v2.8.3*
 
+<<<<<<< HEAD
 -   Step #1: Check that the layers are perfectly complementary to each other by manual visualization, and they are not
 
     ![](figures/methods/complementarity_1.png) ![](figures/methods/complementarity_2.png) ![](figures/methods/complementarity_3.png)
 
 -   Step #2: Creating perfectly complementary abyssal and bathyal layers, by taking the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats will be associated with the bathyal layer, because they may represent more potential habitat than abyssal areas.
+=======
+-   Step \#1: We assessed whether or not the bathyal and abyssal layers are perfectly complementary to each other by manual visualization. They were not.
+
+    ![](figures/methods/complementarity_1.png) ![](figures/methods/complementarity_2.png) ![](figures/methods/complementarity_3.png)
+
+-   Step \#2: To create perfectly complementary abyssal and bathyal layers we took the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats were associated with the bathyal layer because they may represent more potential habitat than abyssal areas.
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
     Operation: geometric difference between the bathyal layer and the abyssal layer
 
@@ -89,19 +127,27 @@ library(here)
 
 -   `ArcGIS: Geoprocessing → Pairwise Erase, input = abyssal, erase = bathyal, output = p4s2`
 
+<<<<<<< HEAD
 -   Step #3: Creating one shapefile with the abyssal and bathyal layers which I will then call the deepsea layer.
+=======
+-   Step \#3: We created a single, merged shapefile (the deepsea layer) that included the newly complementary abyssal and bathyal layers.
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
-    Operation: merging layers of the two shapefiles to form one deep sea shapefile
+    Operation: merging of the two complementary shapefiles into a single deep sea shapefile
 
     `QGIS: Vector → Data Management Tools → Merge layers → Input Layers: ABYSSAL + BATHYAL` `ArcGIS: Merge, input = p4s2, input = GOODSprovinces_bathyal_irregularities, output = GOODSprovinces_p4s3`
 
+<<<<<<< HEAD
 -   Step #4: Correcting invalid geometry manually
+=======
+-   Step \#4: Manual correction of invalid geometries
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
 
     ![](figures/methods/self_intersection_5.png)
 
-## Part 5: Merging the coastal and deep sea shapefile layers
+## Part V: Deep-sea clip
 
-*Performed on ArcGIS Pro*
+*Performed in ArcPro v2.8.3*
 
 -   Step #1: Here, two options are possible: (i) removing marine ecoregion areas and keeping them associated with the deep-sea layers (ii) removing areas from the deep sea areas and keeping them associated with the ecoregions. Land areas are identified with the natural earth file because the coastal ecoregions already include more than coastlines and don't need to include the best coastline resolution.
 
@@ -126,9 +172,9 @@ library(here)
 ```{r code c., code = readLines(here("./code/create_layer/c.layer_post-processing_1.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 6: Identify remaining areas
+## Part VI: Indentification of uncharacterized sites
 
-*Performed on ArcGIS Pro*
+*Performed in ArcPro v2.8.3*
 
 -   Step #1: two types of areas will not yet be characterized in the SEAFLOOR layer, (i) hadal regions below 6,500m, where we should not really observe species, (ii) regions between 200 and 800m that don't belong to ecoregions. The bathyal layer starts at 800m and onwards, so there are remaining zones to associate with a region.
 
@@ -150,9 +196,9 @@ library(here)
     | `-ArcGIS: Pairwise erase, input = extent, erase = Provinces_P5S2_PairwiseErase, output = holes_p6s2` |
     +------------------------------------------------------------------------------------------------------+
 
-## Part 7: Remove hadal and classify provinces
+## Part VII: Isolation and classification of hadal trenches
 
-*Performed on R*
+*Performed in R v4.0.3*
 
 -   Step #1: Identification of hadal trenches of the world are done based on rough identification of relevant coastal ecoregions based on [@belyaev_deep_1989] and [@jamieson2010].
 
@@ -165,9 +211,9 @@ library(here)
 ```{r code d., code = readLines(here("./code/create_layer/d.remove_hadal_from_meows.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 8: Characterize missing regions
+## Part VIII: Assigning biogeographic regions to unclassified polygons
 
-*Performed on R*
+*Performed in R v4.0.3*
 
 -   Step #1: associate the depth raster corresponding to a box around the polygon
 
@@ -187,9 +233,9 @@ library(here)
 ```{r code f., code = readLines(here("./code/create_layer/f.full_areas.R")), class.source="small", eval = FALSE}
 ```
 
-## Part 9: Quality checks
+## Part IX: Quality checks
 
-*Performed on ArcGIS Pro*
+*Performed in ArcPro v2.8.3*
 
 -   Step #1: Remove unnecessary parts of the geometry
 
@@ -207,9 +253,16 @@ library(here)
 |------------|
 | `-ArcGIS:` |
 
+<<<<<<< HEAD
 ## Part 10: Remove land
+=======
 
-*Performed on ArcGIS Pro*
++=======================================================================+ +-----------------------------------------------------------------------+
+
+## Part X: Clipping to global landmasses
+>>>>>>> a8a587d48e29934c087e4f9eaf3288417a5cbc5e
+
+*Performed in ArcPro v2.8.3*
 
 |                                                             |
 |-------------------------------------------------------------|
