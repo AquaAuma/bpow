@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggplot2)
 
 
-bpow <- st_read(dsn = "outputs/bpow_p10_attributes_clip2.shp") %>% 
+bpow <- st_read(dsn = "outputs/bpow_p10_attributes.shp") %>% 
   dplyr::select(ID) %>% 
   st_zm(drop = TRUE, what = "ZM")
 attributes <- st_read("outputs/bpow/bpow_p8s5_abyssal_corr.shp") %>% 
@@ -14,6 +14,7 @@ attributes <- st_read("outputs/bpow/bpow_p8s5_abyssal_corr.shp") %>%
          depth_r = ifelse(type == "abyssal", "3,500-6,500m", depth_r),
          depth_r = ifelse(type == "hadal", "6,500m+", depth_r))
 
-bpow <- left_join(bpow, attributes, by = "ID")
+bpow <- left_join(bpow, attributes, by = "ID") %>% 
+  dplyr::select(ID, type, depth_r, prov_n, prov_id, source, geometry)
 
 st_write(bpow, dsn = "outputs/bpow/bpow_p10_final.shp")
