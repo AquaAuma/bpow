@@ -16,8 +16,9 @@ library(tiff)
 library(RColorBrewer)
 
 # load layer
-eco <- st_read("outputs/bpow_p10_attributes_clip2.shp")
-st_crs(eco) <- st_crs(world)
+eco <- st_read("outputs/bpow_p10_attributes_clip2.shp") %>% 
+  st_crop(c(xmin=-180, xmax=180, ymin=-90, ymax=90)) %>% 
+  st_transform(crs = "+proj=moll") 
 
 
 ################################################################################
