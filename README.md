@@ -1,5 +1,7 @@
 # Benthic Provinces of the World
 
+[![DOI](https://zenodo.org/badge/513255061.svg)](https://zenodo.org/badge/latestdoi/513255061)
+
 This repository contains the codes and methods used to produce the shapefile layer associated with "A global biogeographic regionalization of the benthic ocean", by Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz.
 
 Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
