@@ -25,8 +25,13 @@ eco <- st_read("outputs/bpow_p10_attributes_clip2.shp") %>%
 #### Make Figure 3
 ################################################################################
 
-# map for abyssal
+# define colors by bathy type
 col_aby <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="abyssal",]$prov_n))
+col_bat <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="bathyal",]$prov_n))
+col_coast <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="coastal",]$prov_n))
+col_had <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="hadal",]$prov_n))
+
+# map for abyssal
 eco_abyssal <- eco %>% filter(type == "abyssal")
 map_abyssal <- ggplot() + 
   geom_sf(data = eco[eco$type!="abyssal",], fill = "lightgrey", color = NA) +
@@ -36,7 +41,6 @@ map_abyssal <- ggplot() +
   labs(fill = "") + theme(legend.position = "none")
 
 # map for bathyal
-col_bat <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="bathyal",]$prov_n))
 map_bathyal <- ggplot() +
   geom_sf(data = eco[eco$type!="bathyal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco[eco$type == "bathyal",],aes(fill = prov_n), color = NA) + theme_minimal() +
@@ -45,7 +49,6 @@ map_bathyal <- ggplot() +
   labs(fill = "") + theme(legend.position = "none")
 
 # map for coastal provinces
-col_coast <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="coastal",]$prov_n))
 map_coastal <- ggplot() +
   geom_sf(data = eco[eco$type != "coastal",], fill = "lightgrey", color = NA) +
   geom_sf(data = eco[eco$type == "coastal",],aes(fill = prov_n), color = NA) + theme_minimal() +
@@ -53,9 +56,7 @@ map_coastal <- ggplot() +
   scale_fill_manual(values = sample(col_coast)) +
   labs(fill = "") + theme(legend.position = "none")
 
-
 # map for hadal
-col_had <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco[eco$type=="hadal",]$prov_n))
 map_had <- ggplot() +
   geom_sf(data = eco[eco$type == "hadal",], aes(fill = prov_n), color = NA) + 
   geom_sf(data = eco[eco$type!="hadal",], fill = "lightgrey", color = NA) +
@@ -64,43 +65,95 @@ map_had <- ggplot() +
   scale_fill_manual(values = sample(col_had)) +
   labs(fill = "") + theme(legend.position = "none") 
 
+# map for all provinces
+col_aby <- colorRampPalette(brewer.pal(9, "Blues")[7:9])(length(eco[eco$type=="abyssal",]$prov_n))
+col_bat <- colorRampPalette(brewer.pal(9, "Blues")[4:6])(length(eco[eco$type=="bathyal",]$prov_n))
+col_coast <- colorRampPalette(brewer.pal(9, "YlGnBu"))(length(eco[eco$type=="coastal",]$prov_n))
+col_had <- colorRampPalette(brewer.pal(9, "Blues"))(length(eco[eco$type=="hadal",]$prov_n))
+col_prov <- c(col_aby, col_bat, col_coast, col_had)
+col_prov <- sample(colorRampPalette(brewer.pal(12, "Paired"))(length(eco$prov_n)))
+eco2 <- cbind(eco, col_prov)
+
+map_all <- ggplot() +
+  geom_sf(data = eco2, aes(fill = as.factor(ID)), color = NA) + 
+  geom_sf(data = world, color=NA, fill = "white") +
+  theme_minimal() +
+  scale_fill_manual(values = eco2$col_prov) +
+  labs(fill = "") + theme(legend.position = "none")
+
+map_aby <- ggplot() +
+  geom_sf(data = eco2, aes(fill = as.factor(ID)), color = NA) + 
+  geom_sf(data = world, color=NA, fill = "white") +
+  theme_minimal() +
+  scale_fill_manual(values = eco2$col_prov) +
+  labs(fill = "") + theme(legend.position = "none") +
+  geom_sf(data = eco[eco$type %in% c("bathyal","coastal","hadal"),], fill = "lightgrey", color = NA)
+
+map_had <- ggplot() +
+  geom_sf(data = eco2, aes(fill = as.factor(ID)), color = NA) + 
+  geom_sf(data = world, color=NA, fill = "white") +
+  theme_minimal() +
+  scale_fill_manual(values = eco2$col_prov) +
+  labs(fill = "") + theme(legend.position = "none") +
+  geom_sf(data = eco[eco$type %in% c("bathyal","coastal","abyssal"),], fill = "lightgrey", color = NA)
+
+map_coast <- ggplot() +
+  geom_sf(data = eco2, aes(fill = as.factor(ID)), color = NA) + 
+  geom_sf(data = world, color=NA, fill = "white") +
+  theme_minimal() +
+  scale_fill_manual(values = eco2$col_prov) +
+  labs(fill = "") + theme(legend.position = "none") +
+  geom_sf(data = eco[eco$type %in% c("bathyal","hadal","abyssal"),], fill = "lightgrey", color = NA)
+
+map_bat <- ggplot() +
+  geom_sf(data = eco2, aes(fill = as.factor(ID)), color = NA) + 
+  geom_sf(data = world, color=NA, fill = "white") +
+  theme_minimal() +
+  scale_fill_manual(values = eco2$col_prov) +
+  labs(fill = "") + theme(legend.position = "none") +
+  geom_sf(data = eco[eco$type %in% c("coastal","hadal","abyssal"),], fill = "lightgrey", color = NA)
+
 # Map one by one for high resolution
-png(filename = "figures/figure_3/figure3_coastal.png",
+png(filename = "figures/figure2_coastal.png",
     width = 16*200, height = 10*200, res = 200)
-print(map_coastal)
+print(map_coast)
 dev.off()
 
-png(filename = "figures/figure_3/figure3_bathyal.png",
+png(filename = "figures/figure2_bathyal.png",
     width = 16*200, height = 10*200, res = 200)
-print(map_bathyal)
+print(map_bat)
 dev.off()
 
-png(filename = "figures/figure_3/figure3_abyssal.png",
+png(filename = "figures/figure2_abyssal.png",
     width = 16*200, height = 10*200, res = 200)
-print(map_abyssal)
+print(map_aby)
 dev.off()
 
-png(filename = "figures/figure_3/figure3_hadal.png",
+png(filename = "figures/figure2_hadal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_had)
 dev.off()
+
+pdf(filename = "figures/figure2_all.png",
+    width = 16*200, height = 10*200, res = 200)
+print(map_all)
+dev.off()
+
 
 
 ################################################################################
 #### Make Make map of all provinces
 ################################################################################
-col_pro <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco$prov_n))
-map_pro <- ggplot() + 
-  geom_sf(data = eco[eco$type == "hadal",], aes(fill = as.factor(ID)), color = NA) + theme_minimal() +
-  geom_sf(data = eco[eco$type != "hadal",], aes(fill = as.factor(ID)), color = NA) + theme_minimal() +
-  geom_sf(data = world, color = NA, fill = "white") +
-  coord_sf(crs = '+proj=moll') +
-  scale_fill_manual(values = sample(col_pro)) +
+col_all <- colorRampPalette(brewer.pal(12, "Paired"))(length(eco$prov_n))
+map_all <- ggplot() +
+  geom_sf(data = eco,aes(fill = prov_n), color = NA) + theme_minimal() +
+  geom_sf(data = world, color=NA, fill = "white") +
+  scale_fill_manual(values = sample(col_all)) +
   labs(fill = "") + theme(legend.position = "none")
 
-png(filename = "figures/figures_MS/figure_layer.png",
+png(filename = "figures/figure_3/figure_layer.png",
     width = 16*200, height = 10*200, res = 200)
-print(map_pro)
+print(map_all)
 dev.off()
 
 
