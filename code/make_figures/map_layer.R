@@ -77,27 +77,27 @@ map_all <- eco %>%
   labs(fill = "") + theme(legend.position = "none") 
 
 # save files
-png(filename = "figures/figure2_coastal.png",
+png(filename = "figures/figure_2/figure2_coastal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_coastal)
 dev.off()
 
-png(filename = "figures/figure2_bathyal.png",
+png(filename = "figures/figure_2/figure2_bathyal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_bathyal)
 dev.off()
 
-png(filename = "figures/figure2_abyssal.png",
+png(filename = "figures/figure_2/figure2_abyssal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_abyssal)
 dev.off()
 
-png(filename = "figures/figure2_hadal.png",
+png(filename = "figures/figure_2/figure2_hadal.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_had)
 dev.off()
 
-png(filename = "figures/figure2_all.png",
+png(filename = "figures/figure_2/figure2_all.png",
     width = 16*200, height = 10*200, res = 200)
 print(map_all)
 dev.off()
