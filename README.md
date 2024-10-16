@@ -1,4 +1,4 @@
-# Code and figures for "A global biogeographic regionalization of the benthic ocean"
+# benthic provinces of the world
 
 [![DOI](https://zenodo.org/badge/513255061.svg)](https://zenodo.org/badge/latestdoi/513255061)
 

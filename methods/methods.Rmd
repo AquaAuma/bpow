@@ -3,11 +3,11 @@ title: "Appendix 1. Methods file describing all data processing steps to create 
 author: "A. Maureaud, G. Reygondeau, K. Ingenloff, J.G. Vigneron, L. Watling, K. Winner, W. Jetz"
 date: '2023'
 output:
+  pdf_document: default
+  word_document: default
   html_document: 
     toc: true
     theme: flatly
-  word_document: default
-  pdf_document: default
 bibliography: bpow_refs.bib
 link-citations: yes
 ---
@@ -35,11 +35,11 @@ library(here)
 
 -   Step #1: We checked both the bathyal and abyssal layers for errors as we noticed invalid geometries when trying to perform geometric operations in ArcPro/QGIS. Specifically, numerous points were flagged as having self-intersections.
 
-    [![Examples of self-intersections in the shapefiles visualized on QGIS](figures/methods/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](figures/methods/self_intersection_2.png) ![](figures/methods/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS"){width="212"}
+    [![Examples of self-intersections in the shapefiles visualized on QGIS](images/self_intersection_1.png "Examples of self-intersections in the shapefiles visualized on QGIS")](figure1) ![](images/self_intersection_2.png) ![](images/self_intersection_3.png "Examples of self-intersections in the shapefiles visualized on QGIS")
 
 -   Step #2: We evaluated the validity of geometries using "Check validity" in QGIS `Vector → Geometry Tools → Check Validity → Input Layer: BATHYAL/ABYSSAL`
 
-    ![](figures/methods/self_intersection_4.png){width="539"}
+    ![](images/self_intersection_4.png)
 
 ## Part II: Geometry checks (DSP layer) on R
 
@@ -60,13 +60,13 @@ library(here)
 
 -   Step #1: We identified areas off the coast of Florida, USA with spatial irregularities resulting from the fact that the 800m threshold is arbitrary and this is a "transition" zone.
 
-    ![](figures/methods/irregularities.png){width="408"}
+    ![](images/irregularities.png)
 
 -   Step #2: We addressed the irregularites in R using GEBCO and adding additional areas to the bathyal layer.
 
 -   Step #3: All polygons intersecting the depth raster (in blue below) were merged using `sf::st_union()` to create a single larger replacing polygons, added to the bathyal layer.
 
-    ![](figures/methods/irregularities_3.png){width="293"}
+    ![](images/irregularities_3.png)
 
 -   Step #4: We again checked geometry validity to ensure no errors (e.g., self-intersections) remained and saved the file using `sf::st_write()`.
 
@@ -79,7 +79,7 @@ library(here)
 
 -   Step #1: We assessed whether or not the bathyal and abyssal layers are perfectly complementary to each other by manual visualization. They were not.
 
-    ![](figures/methods/complementarity_1.png) ![](figures/methods/complementarity_2.png) ![](figures/methods/complementarity_3.png)
+    ![](images/complementarity_1.png) ![](images/complementarity_2.png) ![](images/complementarity_3.png)
 
 -   Step #2: To create perfectly complementary abyssal and bathyal layers we took the difference between the two layers. All grid cells that are shared between the abyssal and bathyal habitats were associated with the bathyal layer because they may represent more potential habitat than abyssal areas.
 
@@ -95,7 +95,7 @@ library(here)
 
 -   Step #4: Manual correction of invalid geometries
 
-    ![](figures/methods/self_intersection_5.png)
+    ![](images/self_intersection_5.png)
 
 ## Part V: Deep-sea clip
 
@@ -103,11 +103,11 @@ library(here)
 
 -   Step #1: Here, two options are possible: (i) removing marine ecoregion areas and keeping them associated with the deep-sea layers (ii) removing areas from the deep sea areas and keeping them associated with the ecoregions. Land areas are identified with the natural earth file because the coastal ecoregions already include more than coastlines and don't need to include the best coastline resolution.
 
-    ![](figures/methods/merge_1.png){width="543"}
+    ![](images/merge_1.png)
 
     Operation (i): geometric difference between the MEOW layer and the DEEPSEA layer
 
-    ![](figures/methods/merge_2.png)
+    ![](images/merge_2.png)
 
     `ArcGIS: Geoprocessing → Pairwise Erase, input = meows_ecos, erase = GOODSprovinces_p4s3, output = provinces_p5s1`
 
@@ -128,7 +128,7 @@ library(here)
 
 -   Step #1: two types of areas will not yet be characterized in the SEAFLOOR layer, (i) hadal regions below 6,500m, where we should not really observe species, (ii) regions between 200 and 800m that don't belong to ecoregions. The bathyal layer starts at 800m and onwards, so there are remaining zones to associate with a region.
 
-    ![](figures/methods/missing_regions_1.png) ![](figures/methods/missing_regions_2.png)
+    ![](images/missing_regions_1.png) ![](images/missing_regions_2.png)
 
 -   Step #2: get a shapefile with all missing polygons: (merge of seafloor shapefile with a low resolution land layer (does not matter since meows have a bunch of land areas already)
 
@@ -150,7 +150,7 @@ library(here)
 
 -   Step #2: For each identified ecoregion from Step #1, we use the corresponding depth raster from GEBCO to identify trenches (below 6,500m deep) and create new polygons from there. For instance, on the figure below, the ecoregion "Eastern Caribbean" from provinces_p5s2 include deep area on the northern sites.
 
-    ![](figures/methods/select_hadal_1.png){width="263"} ![](figures/methods/select_hadal_2.png){width="198"}
+    ![](images/select_hadal_1.png) ![](images/select_hadal_2.png)
 
 -   Step #3: All polygons are merged back to the provinces shapefile, where coastal ecoregions do not include hadal trenches anymore, and they are added as separate geometries.
 
@@ -169,7 +169,7 @@ library(here)
 
 -   Step #4: if there are multiple polygons, calculate the closest distance based on 3D (longitude, latitude, depth (a)) with the function [mcNNindex](https://www.rdocumentation.org/packages/Morpho/versions/2.8/topics/mcNNindex) and associate the closest polygon based on shortest distance around each point of the raster of the missing polygon (b). Because some areas are transition areas, the boundaries between the polygons are not clean (see figure (c)), so the resulting raster is aggregated at a lower resolution, as well as the grid cell polygon associations (d). Finally, polygons are created and associated with the ID of the closest polygon from the seafloor shapefile.
 
-    ![](figures/methods/3D-NNA_1.png){width="179"} ![](figures/methods/3D-NNA_2.png){width="198"} ![](figures/methods/3D-NNA_3.png){width="213"}
+    ![](images/3D-NNA_1.png) ![](images/3D-NNA_2.png) ![](images/3D-NNA_3.png)
 
 ```{r  code e., code = readLines(here("./code/create_layer/e.add_missing_regions.R")), class.source="small", eval = FALSE}
 ```
