@@ -142,7 +142,7 @@ for(i in 1:length(spp)){
   eco_xx <- left_join(eco, spp_xx, by = "ID") %>% 
     filter(!is.na(nb))
   
-  png(filename = paste0("figures/figure_4/technical_validation_",spp[i],".png"),
+  png(filename = paste0("figures/application/technical_validation_",spp[i],".png"),
       width = 16*200, height = 10*200, res = 200)
   print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
           geom_sf(data = occ_sf_layer[occ_sf_layer$species == spp[i],], col = "black", shape = 3, size = 4, lwd = 3) +
@@ -172,7 +172,7 @@ spp_xx <- gbif_sf_layer %>%
 eco_xx <- left_join(eco, spp_xx, by = "ID") %>% 
   filter(!is.na(nb))
 
-png(filename = paste0("figures/figures_MS_data/technical_validation_2_",spp[i],".png"),
+png(filename = paste0("figures/application/technical_validation_2_",spp[i],".png"),
     width = 16*200, height = 10*200, res = 200)
 print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
         geom_sf(data = gbif_sf_layer[gbif_sf_layer$species == spp[i],], col = "black", shape = 3, size = 4, lwd = 3) +
@@ -187,7 +187,7 @@ print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
               legend.text = element_text(size=20)))
 dev.off()
 
-png(filename = paste0("figures/figures_MS_data/technical_validation_3_",spp[i],".png"),
+png(filename = paste0("figures/application/technical_validation_3_",spp[i],".png"),
     width = 16*200, height = 10*200, res = 200)
 print(ggplot(eco_xx) + geom_sf(aes(fill = nb), color = NA) +
         geom_sf(data = eco_xx[eco_xx$type=="MEOW",], fill = "black", alpha = 0.3, color = "black") +
@@ -232,7 +232,7 @@ for(i in 1:length(spp)){
     filter(!is.na(nb))
   
   # map map
-  png(filename = paste0("figures/figure_4/true_false",spp[i],".png"),
+  png(filename = paste0("figures/application/true_false",spp[i],".png"),
       width = 16*200, height = 10*200, res = 200)
   print(ggplot(eco_xx[eco_xx$type_tf == "TRUE" ,]) + geom_sf(aes(fill = prop), color = NA) +
     scale_fill_gradient(limits = c(0,100), low= brewer.pal(9,"OrRd")[2], high = brewer.pal(9,"OrRd")[8]) +
@@ -257,4 +257,4 @@ for(i in 1:length(spp)){
   summary_tab <- rbind(summary_tab, spp_tab)
 }
 
-write.csv(summary_tab, file = "figures/figure_4/summary_tab.csv", row.names = FALSE)
+write.csv(summary_tab, file = "figures/application/summary_tab.csv", row.names = FALSE)
