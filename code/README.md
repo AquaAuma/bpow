@@ -10,11 +10,11 @@ Describing all steps to create the GIS layer performed on R:
 - h.fix_geometry_prior_clipp.R helps checking the geometry validity before land clipp
 - i.add_attributes.R add the right layer attributed to finalize the layer product
 
-### application
+### technical_validation
 Testing the layer on 9 example species:
 - application.R linking information from the layer, species occurrences, and expert knowledge
+- technical_validation.R summarizing match between layer and distributional data
 
 ### make_figures
 To produce the figures in the manuscript:
-- make_figure_2.R
-- make_figure_3.R
+- map_layer.R
