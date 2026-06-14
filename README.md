@@ -4,8 +4,6 @@
 
 This repository contains the codes and methods used to produce the shapefile layer associated with "A global biogeographic regionalization of the benthic ocean", by Aurore A. Maureaud, Gabriel Reygondeau, Kate Ingenloff, Jessiva G. Vigneron, Les Watling, Kevin Winner, Walter Jetz.
 
-Main contact: Aurore A. Maureaud, aurore.aqua@gmail.com
-
 ## Methods
 The `methods.Rmd` Rmarkdown file details all methods to create the benthic provinces of the world (bpow) GIS layer. Methods are summarized in the file because both R v4.0.3 and ArcPro 2.8.3 softwares were used, and this document gives an overall overview of the methods and steps involved. This document is also summarized in Figure 1. 
 
